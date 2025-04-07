@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MerchantNPC.h"
+#include "PlayerQuestListWidget.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -62,6 +63,16 @@ void AKillerRestaurantCharacter::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AKillerRestaurantCharacter::OnOverlapNPCBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AKillerRestaurantCharacter::OnOverlapNPCEnd);
+
+	if (playerQuestListUI_bp != nullptr)
+	{
+		playerQuestListUI = CreateWidget<UPlayerQuestListWidget>(GetWorld(), playerQuestListUI_bp);
+
+		if (playerQuestListUI != nullptr)
+		{
+			playerQuestListUI->AddToViewport();
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,6 +151,7 @@ void AKillerRestaurantCharacter::Interact()
 	if (merchantNPC)
 	{
 		merchantNPC->StartInteract();
+		playerQuestListUI->CompleteStartQuest();
 	}
 	else
 	{

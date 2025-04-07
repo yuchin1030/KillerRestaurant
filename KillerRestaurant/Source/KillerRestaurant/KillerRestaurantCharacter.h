@@ -53,6 +53,12 @@ public:
 	UPROPERTY()
 	class AMerchantNPC* merchantNPC;
 
+	UPROPERTY()
+	class UPlayerQuestListWidget* playerQuestListUI;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	TSubclassOf<UUserWidget> playerQuestListUI_bp;
+
 	UFUNCTION()
 	void Interact();
 
