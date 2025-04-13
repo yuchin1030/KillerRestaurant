@@ -28,7 +28,22 @@ public:
 
 	// 이동할 목표 위치 (편하게 편집 가능하게)
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	AActor* TargetLocationActor;
+	AActor* A_targetLoc1;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	AActor* A_targetLoc2;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	AActor* A_targetLoc3;
+
+	UPROPERTY()
+	TArray<bool> isDoughPlaced;
+	
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	TSubclassOf<class AStretchedDough> stretchDough_bp;
+
+	//UPROPERTY(EditAnywhere, Category = "MySettings")
+	//class AStretchedDough* stretchDough;
 
 	UFUNCTION()
 	void OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed);

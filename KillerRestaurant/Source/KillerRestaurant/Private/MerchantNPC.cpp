@@ -5,6 +5,7 @@
 #include "NPCDialogueAsset.h"
 #include "Kismet/GameplayStatics.h"
 
+
 // Sets default values
 AMerchantNPC::AMerchantNPC()
 {
@@ -35,6 +36,7 @@ void AMerchantNPC::StartInteract()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start Interact with merchantNPC"));
 	UGameplayStatics::OpenLevel(GetWorld(), FName("PizzaRestaurant"));	// FName()에 꼭 가두기!!
-	// 대화 UI창
+	
+	 //대화 UI창
 }
 
