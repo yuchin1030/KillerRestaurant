@@ -21,5 +21,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class UStaticMeshComponent* smComp;
+	class UStaticMeshComponent* sm_bread;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UStaticMeshComponent* sm_sausage;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UStaticMeshComponent* sm_pickles;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UStaticMeshComponent* sm_onions;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UStaticMeshComponent* sm_ketchup;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UStaticMeshComponent* sm_mustard;
 };
