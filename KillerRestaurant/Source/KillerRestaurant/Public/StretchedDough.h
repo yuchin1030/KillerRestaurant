@@ -37,4 +37,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UStaticMeshComponent* sm_mustard;
+
+	bool bHasSausage;
+	bool bHasPickles;
+	bool bHasOnions;
+	bool bHasKetcuhp;
+	bool bHasMustard;
 };

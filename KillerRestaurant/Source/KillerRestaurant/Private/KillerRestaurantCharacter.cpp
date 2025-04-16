@@ -12,6 +12,11 @@
 #include "InputActionValue.h"
 #include "MerchantNPC.h"
 #include "PlayerQuestListWidget.h"
+#include "RawSausage.h"
+#include "Dough.h"
+#include "CookManager.h"
+#include <Kismet/GameplayStatics.h>
+#include "GrilledSausage.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -73,6 +78,8 @@ void AKillerRestaurantCharacter::BeginPlay()
 			playerQuestListUI->AddToViewport();
 		}
 	}
+
+	manager = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -103,6 +110,8 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AKillerRestaurantCharacter::Look);
 
 		EnhancedInputComponent->BindAction(ia_interact, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Interact);
+
+		EnhancedInputComponent->BindAction(ia_click, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Click);
 	}
 	else
 	{
@@ -156,6 +165,54 @@ void AKillerRestaurantCharacter::Interact()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("merchantNPC is null"));
+	}
+}
+
+void AKillerRestaurantCharacter::Click()
+{
+	if (!manager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No manager"));
+		return;
+	}
+
+	FHitResult hitResult;
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+
+	if (PC && PC->GetHitResultUnderCursor(ECC_Visibility, false, hitResult))
+	{
+		FString name = hitResult.GetActor()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *name);
+
+		AActor* hitActor = hitResult.GetActor();
+
+		if (hitActor)
+		{
+			if (ADough* breadBox = Cast<ADough>(hitActor))
+			{
+				manager->SpawnBread();
+			}
+			else if (ARawSausage* sausageBox = Cast<ARawSausage>(hitActor))
+			{
+				manager->SpawnSausage();
+			}
+			else if (AGrilledSausage* grilledSausage = Cast<AGrilledSausage>(hitActor))
+			{
+				manager->InsertGrilledSausageToBread(grilledSausage);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("nothing cast"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("hitActor is null"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("pc is null"));
 	}
 }
 

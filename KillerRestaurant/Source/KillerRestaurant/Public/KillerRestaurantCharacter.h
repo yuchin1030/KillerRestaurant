@@ -47,6 +47,9 @@ class AKillerRestaurantCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ia_interact;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ia_click;
+
 public:
 	AKillerRestaurantCharacter();
 	
@@ -59,8 +62,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TSubclassOf<UUserWidget> playerQuestListUI_bp;
 
+	UPROPERTY(EditAnywhere)
+	class ACookManager* manager;
+
 	UFUNCTION()
 	void Interact();
+
+	UFUNCTION()
+	void Click();
 
 	UFUNCTION()
 	void OnOverlapNPCBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

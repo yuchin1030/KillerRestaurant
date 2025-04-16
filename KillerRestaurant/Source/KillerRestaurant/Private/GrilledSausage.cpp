@@ -25,10 +25,8 @@ void AGrilledSausage::Tick(float DeltaTime)
 
 }
 
-void AGrilledSausage::Grill(int32 index)
+void AGrilledSausage::Grill()
 {
-	int32 _index = index;
-
 	FTimerHandle grillTimerHdl;
 	GetWorld()->GetTimerManager().SetTimer(grillTimerHdl, [&]() {
 
@@ -36,18 +34,13 @@ void AGrilledSausage::Grill(int32 index)
 		UE_LOG(LogTemp, Warning, TEXT("sausage grilled!"));
 		SetActorRotation(FRotator(0,90,0));
 
-		/*isGrilled[_index] = true;
-		UE_LOG(LogTemp, Warning, TEXT("sausage%d grilled!"), _index);
-		UE_LOG(LogTemp, Warning, TEXT("isGrilled[] : %d %d %d"), isGrilled[0], isGrilled[1], isGrilled[2]);*/
-
 		FTimerHandle burnTimerHdl;
 		GetWorld()->GetTimerManager().SetTimer(burnTimerHdl, [&]() {
 
+			isBurned = true;
 			UE_LOG(LogTemp, Warning, TEXT("sausage burned!"));
-			SetActorRotation(FRotator(0, 90, 0));
+			SetActorRotation(FRotator(0));
 
-			//UE_LOG(LogTemp, Warning, TEXT("sausage%d burned!"), index);
-		}, 7.0f, false);
-	}, 7.0f, false);
+		}, 3.0f, false);
+	}, 3.0f, false);
 }
-
