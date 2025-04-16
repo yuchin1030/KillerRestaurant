@@ -43,4 +43,10 @@ public:
 	bool bHasOnions;
 	bool bHasKetcuhp;
 	bool bHasMustard;
+
+	UPROPERTY()
+	int32 curBreadLocIndex;
+
+	UFUNCTION()
+	void SetCurBreadLocIndex(int32 index);
 };

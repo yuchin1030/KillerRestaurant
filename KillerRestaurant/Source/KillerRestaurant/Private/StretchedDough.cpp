@@ -42,3 +42,8 @@ void AStretchedDough::Tick(float DeltaTime)
 
 }
 
+void AStretchedDough::SetCurBreadLocIndex(int32 index)
+{
+	curBreadLocIndex = index;
+}
+

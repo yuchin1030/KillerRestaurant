@@ -34,13 +34,19 @@ void AGrilledSausage::Grill()
 		UE_LOG(LogTemp, Warning, TEXT("sausage grilled!"));
 		SetActorRotation(FRotator(0,90,0));
 
-		FTimerHandle burnTimerHdl;
-		GetWorld()->GetTimerManager().SetTimer(burnTimerHdl, [&]() {
+		//FTimerHandle burnTimerHdl;
+		//GetWorld()->GetTimerManager().SetTimer(burnTimerHdl, [&]() {
 
-			isBurned = true;
-			UE_LOG(LogTemp, Warning, TEXT("sausage burned!"));
-			SetActorRotation(FRotator(0));
+		//	isGrilled = false;
+		//	isBurned = true;
+		//	UE_LOG(LogTemp, Warning, TEXT("sausage burned!"));
+		//	SetActorRotation(FRotator(0));
 
-		}, 3.0f, false);
+		//}, 3.0f, false);
 	}, 3.0f, false);
+}
+
+void AGrilledSausage::SetCurSausageLocIndex(int32 index)
+{
+	curSausageLocIndex = index;
 }

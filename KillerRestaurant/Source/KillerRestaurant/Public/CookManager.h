@@ -58,6 +58,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TSubclassOf<class AGrilledSausage> grilledSausage_bp;
 
+	UPROPERTY()
+	int32 suasageCurIndex;
+
 	UFUNCTION()
 	void SpawnBread();
 
@@ -70,5 +73,17 @@ public:
 	UFUNCTION()
 	void PlaceSausage(FVector s_targetLoc, int32 index);
 
-	void InsertGrilledSausageToBread(AGrilledSausage*);
+	void InsertGrilledSausageToBread(AGrilledSausage* grilledSausage, int32 curSausageIndex);
+
+	UFUNCTION()
+	void PlacePickles();
+
+	UFUNCTION()
+	void PlaceOnions();
+
+	UFUNCTION()
+	void PlaceKetchup();
+
+	UFUNCTION()
+	void PlaceMustard();
 };

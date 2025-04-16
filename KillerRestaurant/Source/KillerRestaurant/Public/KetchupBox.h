@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GrilledSausage.generated.h"
+#include "KetchupBox.generated.h"
 
 UCLASS()
-class KILLERRESTAURANT_API AGrilledSausage : public AActor
+class KILLERRESTAURANT_API AKetchupBox : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	AGrilledSausage();
+	AKetchupBox();
 
 protected:
 	virtual void BeginPlay() override;
@@ -22,20 +22,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UStaticMeshComponent* smComp;
-
-	UPROPERTY()
-	int32 curSausageLocIndex;
-
-	//UPROPERTY()
-	bool isGrilled;
-	bool isBurned;
-
-	UPROPERTY()
-	float grillTime = 7.f;
-
-	UFUNCTION()
-	void Grill();
-
-	UFUNCTION()
-	void SetCurSausageLocIndex(int32 index);
 };
