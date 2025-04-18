@@ -3,6 +3,7 @@
 
 #include "CustomerManager.h"
 #include "Customer.h"
+#include <Kismet/GameplayStatics.h>
 
 ACustomerManager::ACustomerManager()
 {
@@ -13,6 +14,8 @@ ACustomerManager::ACustomerManager()
 void ACustomerManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	currentCustomer = Cast<ACustomer>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomer::StaticClass()));
 }
 
 void ACustomerManager::Tick(float DeltaTime)
@@ -24,9 +27,27 @@ void ACustomerManager::Tick(float DeltaTime)
 void ACustomerManager::SpawnCustomer()
 {
 	FActorSpawnParameters params;
-	ACustomer* customer = GetWorld()->SpawnActor<ACustomer>(customer_bp, customerStartLoc, FRotator::ZeroRotator, params);
+	nextCustomer = GetWorld()->SpawnActor<ACustomer>(customer_bp, customerStartLoc, FRotator::ZeroRotator, params);
 
-	// 아직 Check(대화UI) 상태이기 때문에 IDLE 로 대기
-	customer->customerState = ECustomerState::IDLE;
+	if (nextCustomer)
+	{//********************************
+		//currentCustomer->customerState = ECustomerState::EXIT;
+		
+		// 아직 Check(대화UI) 상태이기 때문에 IDLE 로 대기
+		nextCustomer->customerState = ECustomerState::IDLE;
+
+		// 이전 손님이 퇴장 상태일 때 스폰한 새 손님 입장 상태로 바꿔줌
+		if (currentCustomer->customerState == ECustomerState::EXIT)
+		{
+			nextCustomer->customerState = ECustomerState::ENTRY;
+			
+			
+			
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("nextCustomer is null"));
+	}
 }
 

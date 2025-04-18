@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CustomerManager.generated.h"
+#include "CustomerTargetPoint.generated.h"
 
 UCLASS()
-class KILLERRESTAURANT_API ACustomerManager : public AActor
+class KILLERRESTAURANT_API ACustomerTargetPoint : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ACustomerManager();
+	ACustomerTargetPoint();
 
 protected:
 	virtual void BeginPlay() override;
@@ -20,18 +20,17 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, Category="MySettings")
-	TSubclassOf<ACustomer> customer_bp;
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USceneComponent* sceneComp;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	FVector customerStartLoc = FVector(724, -1157, 94);
+	class UArrowComponent* orderTargetPoint;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	ACustomer* currentCustomer;
+	class UArrowComponent* exitFrontTargetPint;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	ACustomer* nextCustomer;
+	class UArrowComponent* exitRightTargetPoint;
 
-	UFUNCTION()
-	void SpawnCustomer();
+
 };

@@ -6,6 +6,9 @@
 #include <Runtime/AIModule/Classes/Blueprint/AIBlueprintHelperLibrary.h>
 #include "CustomerManager.h"
 #include <Kismet/GameplayStatics.h>
+#include "CustomerTargetPoint.h"
+#include "Components/ArrowComponent.h"
+#include <Kismet/KismetMathLibrary.h>
 
 ACustomer::ACustomer()
 {
@@ -21,6 +24,9 @@ void ACustomer::BeginPlay()
 	Super::BeginPlay();
 	
 	cm = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+	customerTargetPoint = Cast<ACustomerTargetPoint>(A_customerTargetLoc);
+
+	AIController = Cast<AAIController>(GetController());
 }
 
 void ACustomer::Tick(float DeltaTime)
@@ -45,7 +51,7 @@ void ACustomer::Tick(float DeltaTime)
 		Check(DeltaTime);
 		break;
 	case ECustomerState::EXIT:
-		Exit();
+		Exit(DeltaTime);
 		break;
 	}
 }
@@ -67,29 +73,34 @@ void ACustomer::Entry(float _DeltaTime)
 	// 카운터 앞까지 이동
 	UE_LOG(LogTemp, Warning, TEXT("Entry"));
 
-	if (A_customerOrderTargetLoc)
+	if (A_customerTargetLoc)
 	{
-		AAIController* AIController = Cast<AAIController>(GetController());
-
 		if (AIController)
 		{
-			//  카운터 앞까지 이동
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, A_customerOrderTargetLoc->GetActorLocation());
-
-			// 거의 다 왔으면 손님이 정면을 바라보게 회전
-			if (FVector::Dist(GetActorLocation(), A_customerOrderTargetLoc->GetActorLocation()) < 100.f)
+			if (customerTargetPoint)
 			{
-				FRotator newRot = FMath::RInterpTo(GetActorRotation(), FRotator(0, 180, 0), _DeltaTime, 90); // 180 : RotationSpeed
+				//  카운터 앞까지 이동
+				UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, customerTargetPoint->orderTargetPoint->GetComponentLocation());
 
-				SetActorRotation(newRot);
-
-				if (GetActorRotation().Equals(FRotator(0, 180, 0), 1.0f)) // 허용 오차 1도
+				// 거의 다 왔으면 손님이 정면을 바라보게 회전
+				if (FVector::Dist(GetActorLocation(), customerTargetPoint->orderTargetPoint->GetComponentLocation()) < 100.f)
 				{
-					customerState = ECustomerState::ORDER;
-				}
-			}
-			
+					FRotator newRot = FMath::RInterpTo(GetActorRotation(), FRotator(0, 180, 0), _DeltaTime, 90); // 180 : RotationSpeed
 
+					SetActorRotation(newRot);
+
+					if (GetActorRotation().Equals(FRotator(0, 180, 0), 1.0f)) // 허용 오차 1도
+					{
+						customerState = ECustomerState::CHECK;
+					}
+				}
+
+
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("customerTargetPoint is null"));
+			}
 			
 		}
 		else
@@ -128,8 +139,55 @@ void ACustomer::Check(float _DeltaTime)
 	}
 }
 
-void ACustomer::Exit()
+void ACustomer::Exit(float _DeltaTime)
 {
 	// 퇴장
+	if (customerTargetPoint)
+	{
+		if (!bSelectExitLocRot)
+		{
+			// 한 번 어디로 퇴장할지 선택하면 더 이상 선택 못하게
+			bSelectExitLocRot = true;
+
+			// 앞으로 퇴장할건지, 옆으로 퇴장할건지 랜덤으로 고름
+			bExitToFront = UKismetMathLibrary::RandomBoolWithWeight(0.5);
+		}
+
+		// targetRot, targetLoc (목표하는 회전방향, 손님이 퇴장하기까지 도달해야 하는 위치)
+		// 앞으로 퇴장하면 FRotator(0) (플레이어 입장에서 뒷모습 보임) 회전 시킨 후 targetPoint 까지 이동
+		if (bExitToFront)
+		{
+			ExitRotateAndMove(FRotator(0), customerTargetPoint->exitFrontTargetPint->GetComponentLocation(), _DeltaTime);
+		}
+		// 옆으로 퇴장하면 FRotator(90) (플레이어 입장에서 옆모습 보임) 회전 시킨 후 targetPoint 까지 이동
+		else
+		{
+			ExitRotateAndMove(FRotator(0, 90, 0), customerTargetPoint->exitRightTargetPoint->GetComponentLocation(), _DeltaTime);
+		}
+
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("customerTargetPoint is null"));
+	}
 }
 
+
+void ACustomer::ExitRotateAndMove(FRotator exitTargetRot, FVector exitTargetLoc, float DeltaTime)
+{
+	FRotator newRot = FMath::RInterpTo(GetActorRotation(), exitTargetRot, DeltaTime, 90); // 90 : RotationSpeed
+
+	SetActorRotation(newRot);
+
+	if (GetActorRotation().Equals(exitTargetRot, 1.0f)) // 허용 오차 1도
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, exitTargetLoc);
+
+	// 손님이 퇴장 위치까지 거의 다 왔으면
+	if (FVector::Dist(GetActorLocation(), exitTargetLoc) < 100.f)
+	{
+		cm->currentCustomer = cm->nextCustomer;
+		cm->nextCustomer = nullptr;
+		// this->Destroy(); *****************************
+	}
+}

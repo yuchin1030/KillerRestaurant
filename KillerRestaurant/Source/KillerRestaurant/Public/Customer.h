@@ -37,10 +37,20 @@ public:
 	class ACustomerManager* cm;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	ECustomerState customerState = ECustomerState::ENTRY;
+	ECustomerState customerState = ECustomerState::IDLE;
 	
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	AActor* A_customerOrderTargetLoc;
+	AActor* A_customerTargetLoc;
+
+	class AAIController* AIController;
+
+	class ACustomerTargetPoint* customerTargetPoint;
+
+	bool bSelectExitLocRot = false;
+	bool bExitToFront;
+
+	UFUNCTION()
+	void ExitRotateAndMove(FRotator exitTargetRot, FVector exitTargetLoc, float DeltaTime);
 
 private:
 	void Idle();
@@ -48,5 +58,5 @@ private:
 	void Order();
 	void Wait(float _DeltaTime);
 	void Check(float _DeltaTime);
-	void Exit();
+	void Exit(float _DeltaTime);
 };
