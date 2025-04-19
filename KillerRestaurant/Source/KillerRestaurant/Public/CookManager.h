@@ -6,6 +6,25 @@
 #include "GameFramework/Actor.h"
 #include "CookManager.generated.h"
 
+USTRUCT(BlueprintType)
+struct FHotdogTopping
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bPickles;
+
+	UPROPERTY()
+	bool bOnions;
+
+	UPROPERTY()
+	bool bKetchup;
+
+	UPROPERTY()
+	bool bMustard;
+};
+
+
 UCLASS()
 class KILLERRESTAURANT_API ACookManager : public AActor
 {
@@ -61,6 +80,9 @@ public:
 	UPROPERTY()
 	int32 suasageCurIndex;
 
+	UPROPERTY()
+	TArray<FHotdogTopping> completedHotdogs;
+
 	UFUNCTION()
 	void SpawnBread();
 
@@ -86,4 +108,7 @@ public:
 
 	UFUNCTION()
 	void PlaceMustard();
+
+	UFUNCTION()
+	void FinishMaking(int32 bellNum_);
 };

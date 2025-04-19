@@ -21,7 +21,8 @@
 #include "OnionsBox.h"
 #include "KetchupBox.h"
 #include "MustardBox.h"
-
+#include "ServingBell.h"
+#include "CustomerManager.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -84,7 +85,9 @@ void AKillerRestaurantCharacter::BeginPlay()
 		}
 	}
 
-	manager = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
+	coM = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
+	cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -175,7 +178,7 @@ void AKillerRestaurantCharacter::Interact()
 
 void AKillerRestaurantCharacter::Click()
 {
-	if (!manager)
+	if (!coM || !cuM)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No manager"));
 		return;
@@ -195,32 +198,49 @@ void AKillerRestaurantCharacter::Click()
 		{
 			if (ADough* breadBox = Cast<ADough>(hitActor))
 			{
-				manager->SpawnBread();
+				coM->SpawnBread();
 			}
 			else if (ARawSausage* sausageBox = Cast<ARawSausage>(hitActor))
 			{
-				manager->SpawnSausage();
+				coM->SpawnSausage();
 			}
 			else if (AGrilledSausage* grilledSausage = Cast<AGrilledSausage>(hitActor))
 			{
 				// 어떤 화구에 위치한 소세지를 사용했는지 알아야 사용 후 어느 위치에 소세지가 비어있는지 알 수 있기 때문에 스폰했을 때 스폰 위치 인덱스를 전달 
-				manager->InsertGrilledSausageToBread(grilledSausage, grilledSausage->curSausageLocIndex);
+				coM->InsertGrilledSausageToBread(grilledSausage, grilledSausage->curSausageLocIndex);
 			}
 			else if (APicklesBox* picklesBox = Cast<APicklesBox>(hitActor))
 			{
-				manager->PlacePickles();
+				coM->PlacePickles();
 			}
 			else if (AOnionsBox* onionsBox = Cast<AOnionsBox>(hitActor))
 			{
-				manager->PlaceOnions();
+				coM->PlaceOnions();
 			}
 			else if (AKetchupBox* ketchupBox = Cast<AKetchupBox>(hitActor))
 			{
-				manager->PlaceKetchup();
+				coM->PlaceKetchup();
 			}
 			else if (AMustardBox* mustardBox = Cast<AMustardBox>(hitActor))
 			{
-				manager->PlaceMustard();
+				coM->PlaceMustard();
+			}
+			else if (AServingBell* servingBell = Cast<AServingBell>(hitActor))
+			{
+				UPrimitiveComponent* hitComp = hitResult.GetComponent();
+				int32 bellNum;
+				//UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *hitComp->GetName());
+
+				// hit 된 컴포넌트가 첫번째 벨이라면
+				if (hitComp == servingBell->sm_FirstBell)
+					bellNum = 0;
+				else if (hitComp == servingBell->sm_SecondBell)
+					bellNum = 1;
+				else
+					bellNum = 2;
+				
+				coM->FinishMaking(bellNum);
+				cuM->Serving();
 			}
 			else
 			{

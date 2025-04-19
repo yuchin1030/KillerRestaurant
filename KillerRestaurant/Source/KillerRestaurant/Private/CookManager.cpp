@@ -314,3 +314,15 @@ void ACookManager::PlaceMustard()
     }
 }
 
+void ACookManager::FinishMaking(int32 bellNum_)
+{
+    FHotdogTopping topping;
+
+    topping.bPickles = spawnedBreads[bellNum_]->bHasPickles;
+    topping.bOnions = spawnedBreads[bellNum_]->bHasOnions;
+    topping.bKetchup = spawnedBreads[bellNum_]->bHasKetcuhp;
+    topping.bMustard = spawnedBreads[bellNum_]->bHasMustard;
+
+    completedHotdogs.Add(topping);
+}
+

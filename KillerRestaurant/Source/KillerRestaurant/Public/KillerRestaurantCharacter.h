@@ -63,7 +63,10 @@ public:
 	TSubclassOf<UUserWidget> playerQuestListUI_bp;
 
 	UPROPERTY(EditAnywhere)
-	class ACookManager* manager;
+	class ACookManager* coM;
+
+	UPROPERTY(EditAnywhere)
+	class ACustomerManager* cuM;
 
 	UFUNCTION()
 	void Interact();

@@ -34,23 +34,21 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class ACustomerManager* cm;
+	class ACustomerManager* cuM;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	ECustomerState customerState = ECustomerState::IDLE;
-	
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	AActor* A_customerTargetLoc;
 
 	class AAIController* AIController;
 
-	class ACustomerTargetPoint* customerTargetPoint;
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	FVector exitTargetLoc;
 
 	bool bSelectExitLocRot = false;
 	bool bExitToFront;
 
 	UFUNCTION()
-	void ExitRotateAndMove(FRotator exitTargetRot, FVector exitTargetLoc, float DeltaTime);
+	void ExitRotateAndMove(FRotator exitTargetRot, FVector _exitTargetLoc, float DeltaTime);
 
 private:
 	void Idle();
