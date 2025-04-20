@@ -30,6 +30,25 @@ void ACustomerManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bCameraTransitioning)
+	{
+		USpringArmComponent* boom = player->GetCameraBoom();
+
+		// 위치 및 회전을 부드럽게 변화시키기 위한 보간 함수
+		// VInterpTo(현재위치, 목표위치, DeltaTime, 속도) - 현재위치에서 목표위치까지 부드럽게 이동
+		// RInterpTo(현재회전값, 목표회전값, DeltaTime, 속도) - 현재회전값에서 목표회전값까지 부드럽게 회전
+		FVector newLoc = FMath::VInterpTo(boom->GetRelativeLocation(), cameraTargetLoc, DeltaTime, cameraLerpSpeed);	
+		FRotator newRot = FMath::RInterpTo(boom->GetRelativeRotation(), cameraTargetRot, DeltaTime, cameraLerpSpeed);
+
+		boom->SetRelativeLocation(newLoc);
+		boom->SetRelativeRotation(newRot);
+
+		// 완료 체크 (목표위치와 목표 회전에 거의 도달했으면 멈춤)
+		if (FVector::Dist(newLoc, cameraTargetLoc) < 1.f && FMath::Abs((newRot - cameraTargetRot).Yaw) < 1.f)
+		{
+			bCameraTransitioning = false;
+		}
+	}
 }
 
 
@@ -134,20 +153,32 @@ void ACustomerManager::CalculateReward(float totalSatisfaction)
 
 void ACustomerManager::SetPlayerCameraView(bool bWaiting)
 {
+	bCameraTransitioning = true;
+
 	player->GetCameraBoom()->bUsePawnControlRotation = !bWaiting;
 
-	// 주문 받았으면 요리 시점으로 변경 - Customer : Wait 상태
 	if (bWaiting)
 	{
-		player->GetCameraBoom()->SetRelativeLocation(FVector(48, 0, 259));
-		player->GetCameraBoom()->SetRelativeRotation(FRotator(-37.070497, 0, 0));
+		cameraTargetLoc = FVector(219, 0, 222);
+		cameraTargetRot = FRotator(-47, 0, 0);
 	}
-	// 끝났으면 주문 시점으로 변경 - Customer : Check 상태
 	else
 	{
-		player->GetCameraBoom()->SetRelativeLocation(FVector(0));
-		player->GetCameraBoom()->SetRelativeRotation(FRotator(0));
+		cameraTargetLoc = FVector(500, 0, 0);
+		cameraTargetRot = FRotator(0);
 	}
+	//// 주문 받았으면 요리 시점으로 변경 - Customer : Wait 상태
+	//if (bWaiting)
+	//{
+	//	player->GetCameraBoom()->SetRelativeLocation(FVector(219, 0, 222));
+	//	player->GetCameraBoom()->SetRelativeRotation(FRotator(-47, 0, 0));
+	//}
+	//// 끝났으면 주문 시점으로 변경 - Customer : Check 상태
+	//else
+	//{
+	//	player->GetCameraBoom()->SetRelativeLocation(FVector(500, 0, 0));
+	//	player->GetCameraBoom()->SetRelativeRotation(FRotator(0));
+	//}
 	
 }
 

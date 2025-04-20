@@ -115,4 +115,11 @@ public:
 
 	UFUNCTION()
 	void SetPlayerCameraView(bool bWaiting);
+
+
+
+	FVector cameraTargetLoc;
+	FRotator cameraTargetRot;
+	bool bCameraTransitioning = false;
+	float cameraLerpSpeed = 3.5f;
 };

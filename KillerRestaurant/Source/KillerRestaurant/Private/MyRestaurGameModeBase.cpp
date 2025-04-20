@@ -4,6 +4,8 @@
 #include "MyRestaurGameModeBase.h"
 #include "KillerRestaurantCharacter.h"
 #include "Camera/CameraComponent.h"
+#include <Kismet/GameplayStatics.h>
+#include "GameFramework/SpringArmComponent.h"
 
 AMyRestaurGameModeBase::AMyRestaurGameModeBase()
 {
@@ -16,8 +18,17 @@ void AMyRestaurGameModeBase::BeginPlay()
 
 	player = Cast<AKillerRestaurantCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
+    // 가게 운영 하는 동안에는 못 움직이게
+    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    if (PC)
+    {
+        PC->SetIgnoreMoveInput(true);
+        PC->SetIgnoreLookInput(true);
+    }
+
 	if (player)
 	{
+        player->GetCameraBoom()->SetRelativeLocation(FVector(500, 0, 0));
 		player->GetFollowCamera()->SetRelativeLocation(FVector(410, 0, 80));
 	}
 	else
