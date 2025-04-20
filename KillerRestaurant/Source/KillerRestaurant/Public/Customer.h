@@ -44,6 +44,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	FVector exitTargetLoc;
 
+	// 손님 만족도(타이머 역할)
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	float totalSatisfaction = 100;
+
+	// 만족도 감소시키는 간격(초)
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	float decreaseInterval = 3;
+
+	float currentTime = 0;
+
 	bool bSelectExitLocRot = false;
 	bool bExitToFront;
 

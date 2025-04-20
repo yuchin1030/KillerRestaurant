@@ -4,6 +4,9 @@
 #include "CookManager.h"
 #include "StretchedDough.h"
 #include "GrilledSausage.h"
+#include "CustomerManager.h"
+#include "Customer.h"
+#include <Kismet/GameplayStatics.h>
 
 ACookManager::ACookManager()
 {
@@ -17,8 +20,13 @@ void ACookManager::BeginPlay()
 	
     isDoughPlaced.Init(false, 3);
     isSausagePlaced.Init(false, 3);
+    spawnedBreads.Init(nullptr, 3);
+    spawnedSausages.Init(nullptr, 3);
 
     SetActorLocation(FVector(459, -464, 94));
+
+    cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+
 }
 
 void ACookManager::Tick(float DeltaTime)
@@ -90,7 +98,7 @@ void ACookManager::PlaceBread(FVector b_targetLoc, int32 index)
         // 스폰됐을때 자신(빵)이 화구 어느 인덱스 위치에 스폰되어있는지 저장해둠
         bread->SetCurBreadLocIndex(index);
 
-        spawnedBreads.Add(bread);
+        spawnedBreads[index] = bread;
 
         isDoughPlaced[index] = true;
 
@@ -167,7 +175,7 @@ void ACookManager::PlaceSausage(FVector s_targetLoc, int32 index)
 
         isSausagePlaced[index] = true;
 
-        spawnedSausages.Add(sausage);
+        spawnedSausages[index] = sausage;
 
         UE_LOG(LogTemp, Warning, TEXT("spawn sausage%d"), index);
 
@@ -314,15 +322,91 @@ void ACookManager::PlaceMustard()
     }
 }
 
-void ACookManager::FinishMaking(int32 bellNum_)
+void ACookManager::FinishMaking(int32 _bellNum)
 {
-    FHotdogTopping topping;
+    if (cuM->currentCustomer->customerState == ECustomerState::WAIT)
+    {
+        FHotdogTopping completedHotdog;
 
-    topping.bPickles = spawnedBreads[bellNum_]->bHasPickles;
-    topping.bOnions = spawnedBreads[bellNum_]->bHasOnions;
-    topping.bKetchup = spawnedBreads[bellNum_]->bHasKetcuhp;
-    topping.bMustard = spawnedBreads[bellNum_]->bHasMustard;
+        if (spawnedBreads[_bellNum])
+        {
+            if (spawnedBreads.Num() > 0 && spawnedBreads[_bellNum]->bHasSausage)
+            {
+                completedHotdog.bPickles = spawnedBreads[_bellNum]->bHasPickles;
+                completedHotdog.bOnions = spawnedBreads[_bellNum]->bHasOnions;
+                completedHotdog.bKetchup = spawnedBreads[_bellNum]->bHasKetcuhp;
+                completedHotdog.bMustard = spawnedBreads[_bellNum]->bHasMustard;
 
-    completedHotdogs.Add(topping);
+                Serving(_bellNum, completedHotdog, spawnedBreads[_bellNum]);
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("spawnBreads is null"));
+        }
+        
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("can't check menu (Customer is not in WAIT state)"));
+    }
+
 }
 
+void ACookManager::Serving(int32 bellNum_, FHotdogTopping _completedHotdog, AStretchedDough* _completedActor)
+{
+    // FHotdogTopping → FHotdogOrder로 변환
+    FHotdogOrder converted;
+    converted.bPickle = _completedHotdog.bPickles;
+    converted.bOnion = _completedHotdog.bOnions;
+    converted.bKetchup = _completedHotdog.bKetchup;
+    converted.bMustard = _completedHotdog.bMustard;
+
+    if (cuM->OrderedHotdogs.Contains(converted))
+    {
+        // 서빙해야할 각 핫도그 메뉴의 개수가 남아있을 경우
+        if (cuM->OrderedHotdogs[converted] > 0)
+        {
+            // 해당 메뉴 개수 -1
+            cuM->OrderedHotdogs[converted]--;
+
+            _completedActor->Destroy();
+
+            // 빵이 사용된 자리를 false로 설정(빵 다시 스폰 가능하게)
+            isDoughPlaced[bellNum_] = false;
+            //spawnedBreads[bellNum_] = nullptr;
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("already serving done. serve different menu"));
+            return;
+        }
+
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("It's not in order"));
+        return;
+    }
+
+    // 모든 핫도그 서빙 완료 여부 확인
+    bool bAllDone = true;
+    for (const auto& orderHotdog : cuM->OrderedHotdogs)
+    {
+        if (orderHotdog.Value > 0)
+        {
+            bAllDone = false;
+            break;
+        }
+    }
+
+    if (bAllDone)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Serving all done"));
+        cuM->currentCustomer->customerState = ECustomerState::CHECK;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("You have to serve more"));
+    }
+}

@@ -22,7 +22,6 @@
 #include "KetchupBox.h"
 #include "MustardBox.h"
 #include "ServingBell.h"
-#include "CustomerManager.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -86,7 +85,7 @@ void AKillerRestaurantCharacter::BeginPlay()
 	}
 
 	coM = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
-	cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+	
 
 }
 
@@ -178,7 +177,7 @@ void AKillerRestaurantCharacter::Interact()
 
 void AKillerRestaurantCharacter::Click()
 {
-	if (!coM || !cuM)
+	if (!coM)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No manager"));
 		return;
@@ -238,9 +237,8 @@ void AKillerRestaurantCharacter::Click()
 					bellNum = 1;
 				else
 					bellNum = 2;
-				
+
 				coM->FinishMaking(bellNum);
-				cuM->Serving();
 			}
 			else
 			{

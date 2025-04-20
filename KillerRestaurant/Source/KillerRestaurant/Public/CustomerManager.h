@@ -24,7 +24,7 @@ struct FHotdogOrder
 	bool bMustard;
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 hotdogCnt;
+	float originalCnt;
 
 	// 비교를 위해 == 으로 두 키가 같은지 알 수 있어야함
 	bool operator==(const FHotdogOrder& Other) const
@@ -33,6 +33,24 @@ struct FHotdogOrder
 			bOnion == Other.bOnion &&
 			bKetchup == Other.bKetchup &&
 			bMustard == Other.bMustard;
+	}
+
+	// 가격 계산 함수
+	float CalculatePrice() const
+	{
+		float eachTotalPrice = 0;
+
+		// 기본 가격 (빵 + 소시지)
+		eachTotalPrice += 50; // 빵
+		eachTotalPrice += 70; // 소시지
+
+		// 토핑 가격
+		if (bPickle) eachTotalPrice += 20;
+		if (bOnion) eachTotalPrice += 15;
+		if (bKetchup) eachTotalPrice += 10;
+		if (bMustard) eachTotalPrice += 10;
+
+		return eachTotalPrice;
 	}
 };
 
@@ -76,7 +94,12 @@ public:
 	bool bSpawnNewCustomer;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	TMap<FHotdogOrder, int32> OrderedHotdogs;
+	TMap<FHotdogOrder, float> OrderedHotdogs;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	float allTotalPrice;
+
+	class AKillerRestaurantCharacter* player;
 
 	UFUNCTION()
 	void SpawnCustomer();
@@ -88,5 +111,8 @@ public:
 	void OrderHotdogMenuCnt();
 
 	UFUNCTION()
-	void Serving();
+	void CalculateReward(float totalSatisfaction);
+
+	UFUNCTION()
+	void SetPlayerCameraView(bool bWaiting);
 };

@@ -78,10 +78,10 @@ public:
 	TSubclassOf<class AGrilledSausage> grilledSausage_bp;
 
 	UPROPERTY()
-	int32 suasageCurIndex;
+	int32 suasageCurIndex;	
 
-	UPROPERTY()
-	TArray<FHotdogTopping> completedHotdogs;
+	UPROPERTY(EditAnywhere)
+	class ACustomerManager* cuM;
 
 	UFUNCTION()
 	void SpawnBread();
@@ -110,5 +110,8 @@ public:
 	void PlaceMustard();
 
 	UFUNCTION()
-	void FinishMaking(int32 bellNum_);
+	void FinishMaking(int32 _bellNum);
+
+	UFUNCTION()
+	void Serving(int32 bellNum_, FHotdogTopping _completedHotdog, AStretchedDough* _completedActor);
 };

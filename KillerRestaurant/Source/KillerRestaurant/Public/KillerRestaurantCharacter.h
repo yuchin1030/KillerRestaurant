@@ -65,8 +65,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ACookManager* coM;
 
-	UPROPERTY(EditAnywhere)
-	class ACustomerManager* cuM;
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	float playerGold = 0;
 
 	UFUNCTION()
 	void Interact();

@@ -113,24 +113,50 @@ void ACustomer::Order()
 {
 	// 음식 주문
 	cuM->OrderHotdogMenuCnt();
-	customerState = ECustomerState::CHECK;
+
+	customerState = ECustomerState::WAIT;
 }
 
 void ACustomer::Wait(float _DeltaTime)
 {
+	cuM->SetPlayerCameraView(true);
+
 	// 주문 후 손님 타이머동안 기다림
+	currentTime += _DeltaTime;
+
+	if (totalSatisfaction <= 0)
+	{
+		// 대화 UI 하게끔 상태 변경
+		customerState = ECustomerState::CHECK;
+	}
+	else if (currentTime > decreaseInterval)
+	{
+		totalSatisfaction--;
+		currentTime = 0;
+
+		UE_LOG(LogTemp, Warning, TEXT("Customer satisfaction: %f"), totalSatisfaction);
+	}
+
 }
 
 void ACustomer::Check(float _DeltaTime)
 {
-	// 모든 음식을 서빙했으면 대화 UI
+	cuM->SetPlayerCameraView(false);
+
+	// 모든 음식을 서빙했으면 
 	if (cuM)
 	{
 		// 1번 스폰했으면 bSpawnNewCustomer는 true로 되기 때문에 중복으로 안 생김
 		if (cuM->bSpawnNewCustomer)
 			return;
 
+		// 정산
+		cuM->CalculateReward(totalSatisfaction);
+
+		// 대화 UI 및 새 손님 Idle 상태 스폰 (ORderedHotdogs, allTotalPrice 초기화)
 		cuM->SpawnCustomer();
+
+
 	}
 	else
 	{
@@ -176,7 +202,6 @@ void ACustomer::Exit(float _DeltaTime)
 	}
 
 }
-
 
 void ACustomer::ExitRotateAndMove(FRotator exitTargetRot, FVector _exitTargetLoc, float DeltaTime)
 {
