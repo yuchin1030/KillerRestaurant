@@ -68,6 +68,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	float playerGold = 0;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	FName playercurrentQuestID = "1";
+
 	UFUNCTION()
 	void Interact();
 

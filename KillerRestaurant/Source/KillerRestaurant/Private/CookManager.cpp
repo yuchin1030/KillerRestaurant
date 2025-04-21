@@ -400,6 +400,7 @@ void ACookManager::Serving(int32 bellNum_, FHotdogTopping _completedHotdog, AStr
         }
     }
 
+    // 서빙 다 했으면
     if (bAllDone)
     {
         UE_LOG(LogTemp, Warning, TEXT("Serving all done"));

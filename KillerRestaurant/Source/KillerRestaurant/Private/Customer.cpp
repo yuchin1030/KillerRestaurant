@@ -124,9 +124,10 @@ void ACustomer::Wait(float _DeltaTime)
 	// 주문 후 손님 타이머동안 기다림
 	currentTime += _DeltaTime;
 
+	// 서빙 다 못했는데 만족도 0 되면 (서빙 다 했을 때 CHECK 로 사태 전환시키는건 Character, CookManager 에 있음
 	if (totalSatisfaction <= 0)
 	{
-		// 대화 UI 하게끔 상태 변경
+		// 자동으로 대화 UI 하게끔 상태 변경
 		customerState = ECustomerState::CHECK;
 	}
 	else if (currentTime > decreaseInterval)
@@ -143,7 +144,7 @@ void ACustomer::Check(float _DeltaTime)
 {
 	cuM->SetPlayerCameraView(false);
 
-	// 모든 음식을 서빙했으면 
+	// 손님 만족도가 0 됐거나 모든 음식을 서빙했으면 
 	if (cuM)
 	{
 		// 1번 스폰했으면 bSpawnNewCustomer는 true로 되기 때문에 중복으로 안 생김
@@ -153,7 +154,11 @@ void ACustomer::Check(float _DeltaTime)
 		// 정산
 		cuM->CalculateReward(totalSatisfaction);
 
-		// 대화 UI 및 새 손님 Idle 상태 스폰 (ORderedHotdogs, allTotalPrice 초기화)
+		// 대화 UI 및 
+		FString selectedDialogue = cuM->GetCustomerDialogue(totalSatisfaction);
+		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *selectedDialogue);
+
+		// 새 손님 Idle 상태 스폰 (OrderedHotdogs, allTotalPrice 초기화)
 		cuM->SpawnCustomer();
 
 

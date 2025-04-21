@@ -7,6 +7,9 @@
 #include <Kismet/GameplayStatics.h>
 #include "KillerRestaurantCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "CustomerDialougeDataAsset.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "Engine/AssetManager.h"
 
 ACustomerManager::ACustomerManager()
 {
@@ -23,6 +26,33 @@ void ACustomerManager::BeginPlay()
 	currentCustomer = Cast<ACustomer>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomer::StaticClass()));
 
 	player = Cast<AKillerRestaurantCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), AKillerRestaurantCharacter::StaticClass()));
+
+	FARFilter Filter;
+	Filter.bRecursivePaths = true;
+	Filter.PackagePaths.Add("/Script/Engine.Blueprint'/Game/Yuchin/DataAssets/DA_CustomerDialogue.DA_CustomerDialogue'");
+	Filter.ClassPaths.Add(FTopLevelAssetPath(TEXT("/Script/KillerRestaurant.CustomerDialougeDataAsset")));
+
+	// 1.  (Build.cs에 AssetRegistry 모듈 추가 필수)
+	// 2. "AssetRegistryModule.h", "Engine/AssetManager.h" 헤더 추가해야함 
+	// Unreal이 제대로 헤더 경로를 못 잡을 때가 있음 --> 이럴 땐 "AssetRegistryModule.h" 경로를 절대 경로 스타일인 "AssetRegistry/AssetRegistryModule.h"로 바꿔줘야함
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	TArray<FAssetData> AssetList;
+	AssetRegistryModule.Get().GetAssets(Filter, AssetList);
+
+	for (const FAssetData& Asset : AssetList)
+	{
+		UCustomerDialougeDataAsset* DialogueAsset = Cast<UCustomerDialougeDataAsset>(Asset.GetAsset());
+		if (DialogueAsset)
+		{
+			AllDialogueDatas.Add(DialogueAsset);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("DialogueAsset is null"));
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Loaded %d Dialogue Assets"), AllDialogueDatas.Num());
 
 }
 
@@ -102,55 +132,6 @@ void ACustomerManager::OrderHotdogMenuCnt()
 	}
 }
 
-void ACustomerManager::CalculateReward(float totalSatisfaction)
-{
-	float percent;
-
-	if (totalSatisfaction >= 80)
-	{
-		percent = 3;
-	}
-	else if (totalSatisfaction >= 50)
-	{
-		percent = 2;
-	}
-	else
-	{
-		percent = 1;
-	}
-
-	for (const auto& Order : OrderedHotdogs)
-	{
-		// 각 핫도그 메뉴 구성
-		const FHotdogOrder& Hotdog = Order.Key;
-
-		// 각 핫도그 남은 개수
-		float remainCnt = Order.Value;
-
-		// 각 핫도그 당 기본 가격
-		float eachTotalPrice = Hotdog.CalculatePrice();
-
-		// 서빙한 개수만큼 계산
-		float servedCnt = Hotdog.originalCnt - remainCnt;
-
-		allTotalPrice += eachTotalPrice * servedCnt * percent;
-
-		UE_LOG(LogTemp, Warning, TEXT("eachTotalPrice : %f servedCnt : %f percent : %f"), eachTotalPrice, servedCnt, percent);
-	}
-
-
-	if (player)
-	{
-		player->playerGold += allTotalPrice;
-		UE_LOG(LogTemp, Warning, TEXT("allTotalPrice : %f player->playerGold : %f"), allTotalPrice, player->playerGold);
-
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("player is null"));
-	}
-}
-
 void ACustomerManager::SetPlayerCameraView(bool bWaiting)
 {
 	bCameraTransitioning = true;
@@ -227,3 +208,150 @@ void ACustomerManager::SetNewCustomer()
 	nextCustomer = nullptr;
 
 }
+
+void ACustomerManager::CalculateReward(float totalSatisfaction)
+{
+	float percent;
+
+	if (totalSatisfaction >= 80)
+	{
+		percent = 3;
+	}
+	else if (totalSatisfaction >= 50)
+	{
+		percent = 2;
+	}
+	else
+	{
+		percent = 1;
+	}
+
+	for (const auto& Order : OrderedHotdogs)
+	{
+		// 각 핫도그 메뉴 구성
+		const FHotdogOrder& Hotdog = Order.Key;
+
+		// 각 핫도그 남은 개수
+		float remainCnt = Order.Value;
+
+		// 각 핫도그 당 기본 가격
+		float eachTotalPrice = Hotdog.CalculatePrice();
+
+		// 서빙한 개수만큼 계산
+		float servedCnt = Hotdog.originalCnt - remainCnt;
+
+		allTotalPrice += eachTotalPrice * servedCnt * percent;
+
+		UE_LOG(LogTemp, Warning, TEXT("eachTotalPrice : %f servedCnt : %f percent : %f"), eachTotalPrice, servedCnt, percent);
+	}
+
+
+	if (player)
+	{
+		player->playerGold += allTotalPrice;
+		UE_LOG(LogTemp, Warning, TEXT("allTotalPrice : %f player->playerGold : %f"), allTotalPrice, player->playerGold);
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("player is null"));
+	}
+}
+
+FString ACustomerManager::GetCustomerDialogue(float satisfaction)
+{
+	// 만족도 등급 설정
+	ESatisfactionGrade grade;
+
+	if (satisfaction >= 80)
+		grade = ESatisfactionGrade::HIGH;
+	else if (satisfaction >= 50)
+		grade = ESatisfactionGrade::MID;
+	else
+		grade = ESatisfactionGrade::LOW;
+
+	// 관련 대사 데이터 찾아오기
+	for (UCustomerDialougeDataAsset* data : AllDialogueDatas)
+	{
+		// 퀘스트대사, 일상대사
+		// 퀘스트1상태이면 퀘스트1대사, 2상태이면 2대사 ...
+		// 평상시에 일상 대사
+		// 확률을 어떻게 할 것인가 - 50
+		if (!data)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("data is null"));
+			continue;
+		}
+
+		// 퀘스트 대사 줄지 일상 대사 줄지 정함(확률:50 - 나중에 확률 바꿀거면 RandomBoolWithWeight 쓰기
+		bool bGiveClue = FMath::RandBool();
+
+		UE_LOG(LogTemp, Warning, TEXT("bGiveClue : %d"), bGiveClue);
+
+		TArray<FString> Candidates;
+
+
+		// 퀘스트 대사 주는 경우
+		if (bGiveClue)
+		{
+			for (const FClueDialogueEntry& Entry : data->questClueDialogues)
+			{
+				// 이 대사의 퀘스트 번호가 플레이어 현재 퀘스트 진행도 번호와 동일하고, 만족도 등급이 현재 손님 만족도 등급과 동일하면
+				if (Entry.QuestID == player->playercurrentQuestID && Entry.SatisGrade == grade)
+				{
+					// 임의 배열에 Add
+					Candidates.Add(Entry.Dialogue);
+				}
+			}
+
+			// 현재 퀘스트 진행도와 손님 만족도를 만족하는 대사들이 담겨있는 임의 대사 배열에서 랜덤으로 하나 고르기(ex.높 - 높 대사들 10개 중 하나 출력)
+			if (Candidates.Num() > 0)
+			{
+				int32 RandIdx = FMath::RandRange(0, Candidates.Num() - 1);
+				return Candidates[RandIdx];
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Candidates is null"));
+			}
+
+
+			return TEXT("...");
+		}
+		// 일상 대사 주는 경우
+		else
+		{
+			const TArray<FString>* targetArray = nullptr;
+
+			// 만족도에 따라 다른 대사 줌
+			switch (grade)
+			{
+			case ESatisfactionGrade::HIGH:
+				targetArray = &data->dailyHighSatisDialogs;
+				break;
+			case ESatisfactionGrade::MID:
+				targetArray = &data->dailyMidSatisDialogs;
+				break;
+			case ESatisfactionGrade::LOW:
+				targetArray = &data->dailyLowSatisDialogs;
+				break;
+			}
+
+			// 만족도 높, 중, 낮 각각 10개 있다 치면 대사들 중에서도 랜덤(ex.높 - 높 대사들 10개 중 하나 출력)
+			if (targetArray && targetArray->Num() > 0)
+			{
+				int32 randIdx = FMath::RandRange(0, targetArray->Num() - 1);
+				return (*targetArray)[randIdx];
+			}
+
+			return TEXT("...");
+		}
+
+	}
+	return TEXT("...");
+}
+
+
+	
+
+

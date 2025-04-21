@@ -101,6 +101,9 @@ public:
 
 	class AKillerRestaurantCharacter* player;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
+	TArray<UCustomerDialougeDataAsset*> AllDialogueDatas;
+
 	UFUNCTION()
 	void SpawnCustomer();
 
@@ -112,6 +115,9 @@ public:
 
 	UFUNCTION()
 	void CalculateReward(float totalSatisfaction);
+
+	UFUNCTION()
+	FString GetCustomerDialogue(float satisfaction);
 
 	UFUNCTION()
 	void SetPlayerCameraView(bool bWaiting);

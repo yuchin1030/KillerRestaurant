@@ -46,7 +46,7 @@ public:
 
 	// 손님 만족도(타이머 역할)
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	float totalSatisfaction = 100;
+	float totalSatisfaction = 1;
 
 	// 만족도 감소시키는 간격(초)
 	UPROPERTY(EditAnywhere, Category = "MySettings")
