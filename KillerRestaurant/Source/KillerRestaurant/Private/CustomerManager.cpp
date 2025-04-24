@@ -14,7 +14,6 @@
 ACustomerManager::ACustomerManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void ACustomerManager::BeginPlay()
@@ -29,7 +28,7 @@ void ACustomerManager::BeginPlay()
 
 	FARFilter Filter;
 	Filter.bRecursivePaths = true;
-	Filter.PackagePaths.Add("/Script/Engine.Blueprint'/Game/Yuchin/DataAssets/DA_CustomerDialogue.DA_CustomerDialogue'");
+	Filter.PackagePaths.Add("/Game/Yuchin/DataAssets");
 	Filter.ClassPaths.Add(FTopLevelAssetPath(TEXT("/Script/KillerRestaurant.CustomerDialougeDataAsset")));
 
 	// 1.  (Build.cs에 AssetRegistry 모듈 추가 필수)
@@ -44,6 +43,8 @@ void ACustomerManager::BeginPlay()
 		UCustomerDialougeDataAsset* DialogueAsset = Cast<UCustomerDialougeDataAsset>(Asset.GetAsset());
 		if (DialogueAsset)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("dddddddddddd"));
+
 			AllDialogueDatas.Add(DialogueAsset);
 		}
 		else
@@ -51,7 +52,7 @@ void ACustomerManager::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("DialogueAsset is null"));
 		}
 	}
-
+	
 	UE_LOG(LogTemp, Warning, TEXT("Loaded %d Dialogue Assets"), AllDialogueDatas.Num());
 
 }
@@ -289,7 +290,6 @@ FString ACustomerManager::GetCustomerDialogue(float satisfaction)
 		UE_LOG(LogTemp, Warning, TEXT("bGiveClue : %d"), bGiveClue);
 
 		TArray<FString> Candidates;
-
 
 		// 퀘스트 대사 주는 경우
 		if (bGiveClue)
