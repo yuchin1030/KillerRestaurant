@@ -65,6 +65,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ACookManager* coM;
 
+	UPROPERTY(EditAnywhere)
+	class AMyRestaurGameModeBase* gm;
+
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	float playerGold = 0;
 

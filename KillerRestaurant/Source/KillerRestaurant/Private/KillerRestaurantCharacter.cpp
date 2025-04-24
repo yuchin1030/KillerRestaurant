@@ -22,6 +22,7 @@
 #include "KetchupBox.h"
 #include "MustardBox.h"
 #include "ServingBell.h"
+#include "MyRestaurGameModeBase.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -86,7 +87,7 @@ void AKillerRestaurantCharacter::BeginPlay()
 
 	coM = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
 	
-
+	gm = Cast<AMyRestaurGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -177,6 +178,17 @@ void AKillerRestaurantCharacter::Interact()
 
 void AKillerRestaurantCharacter::Click()
 {
+	if (gm)
+	{
+		// 영업시간 끝났으면 더 이상 불가
+		if (gm->bRestaurantClosed)
+			return;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No gm"));
+	}
+
 	if (!coM)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No manager"));
