@@ -85,6 +85,8 @@ void ACustomerManager::Tick(float DeltaTime)
 
 void ACustomerManager::OrderHotdogMenuCnt()
 {
+	bOrdered = true;
+
 	// 손님이 주문할 핫도그 총 개수
 	int32 totalMenuCnt = FMath::RandRange(1, 3);
 	UE_LOG(LogTemp, Warning, TEXT("TotalMenuCnt : %d"), totalMenuCnt);
@@ -146,7 +148,7 @@ void ACustomerManager::SetPlayerCameraView(bool bWaiting)
 	}
 	else
 	{
-		cameraTargetLoc = FVector(500, 0, 0);
+		cameraTargetLoc = FVector(570, 0, 0);
 		cameraTargetRot = FRotator(0);
 	}
 	//// 주문 받았으면 요리 시점으로 변경 - Customer : Wait 상태
@@ -196,8 +198,9 @@ void ACustomerManager::SetNewCustomer()
 	//새 손님 입장
 	nextCustomer->customerState = ECustomerState::ENTRY;
 
-	// false로 바꿔줘서 새 손님도 Check -> Exit 기능 가능하게
+	// false로 바꿔줘서 새 손님도 Check -> Exit 기능 가능하게 + 주문 가능하게
 	bSpawnNewCustomer = false;
+	bOrdered = false;
 
 	// 기존 손님 Destroy
 	currentCustomer->Destroy();

@@ -28,7 +28,7 @@ void AMyRestaurGameModeBase::BeginPlay()
 
 	if (player)
 	{
-        player->GetCameraBoom()->SetRelativeLocation(FVector(500, 0, 0));
+        player->GetCameraBoom()->SetRelativeLocation(FVector(570, 0, 0));
 		player->GetFollowCamera()->SetRelativeLocation(FVector(410, 0, 80));
 	}
 	else

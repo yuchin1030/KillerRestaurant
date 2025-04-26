@@ -92,6 +92,7 @@ public:
 	class ACustomerTargetPoint* customerTargetPoint;
 
 	bool bSpawnNewCustomer;
+	bool bOrdered;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TMap<FHotdogOrder, float> OrderedHotdogs;

@@ -26,7 +26,7 @@ public:
 	class AKillerRestaurantCharacter* player;
 
 	UPROPERTY()
-	int32 gameHour = 17;	// 12시 시작
+	int32 gameHour = 12;	// 12시 시작
 
 	UPROPERTY()
 	int32 gameMinute = 50;	// 00분 시작
