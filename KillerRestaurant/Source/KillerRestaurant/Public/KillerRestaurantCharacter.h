@@ -74,6 +74,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	FName playercurrentQuestID = "1";
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UWidgetInteractionComponent* WidgetInteraction;
+
 	UFUNCTION()
 	void Interact();
 
@@ -103,6 +106,8 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	/** Returns CameraBoom subobject **/

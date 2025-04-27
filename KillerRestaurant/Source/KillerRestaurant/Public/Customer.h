@@ -57,14 +57,14 @@ public:
 	bool bSelectExitLocRot = false;
 	bool bExitToFront;
 
-	//UPROPERTY(EditAnywhere, Category = "MySettings")
-	//class UWidgetComponent* orderWidgetComp;
-
-	UPROPERTY()
-	class UHotdogOrderWidget* hotdogOrderUI;
-
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	TSubclassOf<UUserWidget> hotdogOrderUI_bp;
+	class UWidgetComponent* orderWidgetComp;
+
+	//UPROPERTY()
+	//class UHotdogOrderWidget* hotdogOrderUI;
+
+	//UPROPERTY(EditAnywhere, Category = "MySettings")
+	//TSubclassOf<UUserWidget> hotdogOrderUI_bp;
 
 	UFUNCTION()
 	void ExitRotateAndMove(FRotator exitTargetRot, FVector _exitTargetLoc, float DeltaTime);

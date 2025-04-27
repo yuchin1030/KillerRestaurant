@@ -19,12 +19,13 @@ ACustomer::ACustomer()
 	GetMesh()->SetRelativeLocation(FVector(0,0,-90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-	//orderWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("orderWidgetComp"));
-	//orderWidgetComp->SetupAttachment(GetMesh());
-	//// orderWidgetComp->SetWidgetSpace(EWidgetSpace::Screen); // 또는 World
-	//orderWidgetComp->SetDrawSize(FVector2D(300, 300)); // 위젯 크기 설정
-	////orderWidgetComp->SetVisibility(false); // 처음엔 안 보이게
+	orderWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("orderWidgetComp"));
+	orderWidgetComp->SetupAttachment(GetMesh());
+	// orderWidgetComp->SetWidgetSpace(EWidgetSpace::Screen); // 또는 World
+	orderWidgetComp->SetDrawSize(FVector2D(300, 300)); // 위젯 크기 설정
+	//orderWidgetComp->SetVisibility(false); // 처음엔 안 보이게
 
+	
 }
 
 void ACustomer::BeginPlay()
@@ -124,8 +125,8 @@ void ACustomer::Order()
 
 	// 음식 주문
 	cuM->OrderHotdogMenuCnt();
-
-	if (hotdogOrderUI_bp != nullptr)
+	UE_LOG(LogTemp, Error, TEXT("orderWidgetComp->GetReceiveHardwareInput() : %d"), orderWidgetComp->GetReceiveHardwareInput());
+	/*if (hotdogOrderUI_bp != nullptr)
 	{
 		hotdogOrderUI = CreateWidget<UHotdogOrderWidget>(GetWorld(), hotdogOrderUI_bp);
 
@@ -133,7 +134,7 @@ void ACustomer::Order()
 		{
 			hotdogOrderUI->AddToViewport();
 		}
-	}
+	}*/
 	// HotdogOrderWidget : 주문 확인 버튼을 눌러야 손님 Wait 상태로 변경됨
 }
 

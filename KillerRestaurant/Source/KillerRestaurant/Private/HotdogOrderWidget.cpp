@@ -10,8 +10,6 @@ void UHotdogOrderWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	customer = Cast<ACustomer>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomer::StaticClass()));
-
 	if (Button_OrderAccept)
 	{
 		Button_OrderAccept->OnClicked.AddDynamic(this, &UHotdogOrderWidget::OnOrderAcceptClicked);
@@ -21,7 +19,14 @@ void UHotdogOrderWidget::NativeOnInitialized()
 void UHotdogOrderWidget::OnOrderAcceptClicked()
 {
 	// 주문 확인 버튼을 눌러야 손님 Wait 상태로 변경됨
-	customer->customerState = ECustomerState::WAIT;
+	customer = Cast<ACustomer>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomer::StaticClass()));
 
-	RemoveFromParent(); // 창 닫기
+	if (customer)
+	{
+		customer->customerState = ECustomerState::WAIT;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Customer is null"));
+	}
 }

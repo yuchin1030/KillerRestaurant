@@ -23,6 +23,8 @@
 #include "MustardBox.h"
 #include "ServingBell.h"
 #include "MyRestaurGameModeBase.h"
+#include "Components/WidgetInteractionComponent.h"
+#include "Components/WidgetComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -62,9 +64,6 @@ AKillerRestaurantCharacter::AKillerRestaurantCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
 void AKillerRestaurantCharacter::BeginPlay()
@@ -88,6 +87,12 @@ void AKillerRestaurantCharacter::BeginPlay()
 	coM = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
 	
 	gm = Cast<AMyRestaurGameModeBase>(GetWorld()->GetAuthGameMode());
+}
+
+void AKillerRestaurantCharacter::Tick(float DeltaTime)
+{
+	
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -196,7 +201,7 @@ void AKillerRestaurantCharacter::Click()
 	}
 
 	FHitResult hitResult;
-	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();	
 
 	if (PC && PC->GetHitResultUnderCursor(ECC_Visibility, false, hitResult))
 	{
@@ -204,6 +209,8 @@ void AKillerRestaurantCharacter::Click()
 		UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *name);
 
 		AActor* hitActor = hitResult.GetActor();
+
+		UPrimitiveComponent* hitComp = hitResult.GetComponent();
 
 		if (hitActor)
 		{
@@ -238,19 +245,22 @@ void AKillerRestaurantCharacter::Click()
 			}
 			else if (AServingBell* servingBell = Cast<AServingBell>(hitActor))
 			{
-				UPrimitiveComponent* hitComp = hitResult.GetComponent();
-				int32 bellNum;
-				//UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *hitComp->GetName());
+				if (hitComp)
+				{
+					int32 bellNum;
+					//UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *hitComp->GetName());
 
-				// hit 된 컴포넌트가 첫번째 벨이라면
-				if (hitComp == servingBell->sm_FirstBell)
-					bellNum = 0;
-				else if (hitComp == servingBell->sm_SecondBell)
-					bellNum = 1;
-				else
-					bellNum = 2;
+					// hit 된 컴포넌트가 첫번째 벨이라면
+					if (hitComp == servingBell->sm_FirstBell)
+						bellNum = 0;
+					else if (hitComp == servingBell->sm_SecondBell)
+						bellNum = 1;
+					else
+						bellNum = 2;
 
-				coM->FinishMaking(bellNum);
+					coM->FinishMaking(bellNum);
+				}
+
 			}
 			else
 			{
