@@ -166,6 +166,21 @@ void ACustomerManager::SetPlayerCameraView(bool bWaiting)
 	
 }
 
+void ACustomerManager::SetClosing()
+{
+	if (currentCustomer->customerState == ECustomerState::IDLE)
+	{
+		if (currentCustomer)
+			currentCustomer->Destroy();
+
+		bCanPlaying = false;
+	}
+	else if (currentCustomer->customerState == ECustomerState::ENTRY || currentCustomer->customerState == ECustomerState::ORDER)
+	{
+		currentCustomer->customerState = ECustomerState::EXIT;
+	}
+}
+
 void ACustomerManager::SpawnCustomer()
 {
 	// 주문 목록 배열 비워주기

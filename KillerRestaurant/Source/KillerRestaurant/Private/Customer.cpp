@@ -11,6 +11,7 @@
 #include <Kismet/KismetMathLibrary.h>
 #include "Components/WidgetComponent.h"
 #include "HotdogOrderWidget.h"
+#include "MyRestaurGameModeBase.h"
 
 ACustomer::ACustomer()
 {
@@ -23,7 +24,7 @@ ACustomer::ACustomer()
 	orderWidgetComp->SetupAttachment(GetMesh());
 	// orderWidgetComp->SetWidgetSpace(EWidgetSpace::Screen); // 또는 World
 	orderWidgetComp->SetDrawSize(FVector2D(300, 300)); // 위젯 크기 설정
-	//orderWidgetComp->SetVisibility(false); // 처음엔 안 보이게
+	orderWidgetComp->SetVisibility(false); // 처음엔 안 보이게
 
 	
 }
@@ -40,11 +41,16 @@ void ACustomer::BeginPlay()
 	SpawnDefaultController();
 
 	AIController = Cast<AAIController>(GetController());
+
+	gm = Cast<AMyRestaurGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 void ACustomer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!cuM->bCanPlaying)
+		return;
 
 	switch (customerState)
 	{
@@ -125,22 +131,14 @@ void ACustomer::Order()
 
 	// 음식 주문
 	cuM->OrderHotdogMenuCnt();
-	UE_LOG(LogTemp, Error, TEXT("orderWidgetComp->GetReceiveHardwareInput() : %d"), orderWidgetComp->GetReceiveHardwareInput());
-	/*if (hotdogOrderUI_bp != nullptr)
-	{
-		hotdogOrderUI = CreateWidget<UHotdogOrderWidget>(GetWorld(), hotdogOrderUI_bp);
 
-		if (hotdogOrderUI != nullptr)
-		{
-			hotdogOrderUI->AddToViewport();
-		}
-	}*/
-	// HotdogOrderWidget : 주문 확인 버튼을 눌러야 손님 Wait 상태로 변경됨
+	orderWidgetComp->SetVisibility(true);
 }
 
 void ACustomer::Wait(float _DeltaTime)
 {
 	cuM->SetPlayerCameraView(true);
+	orderWidgetComp->SetVisibility(false);
 
 	// 주문 후 손님 타이머동안 기다림
 	currentTime += _DeltaTime;
@@ -179,9 +177,12 @@ void ACustomer::Check(float _DeltaTime)
 		FString selectedDialogue = cuM->GetCustomerDialogue(totalSatisfaction);
 		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *selectedDialogue);
 
-		// 새 손님 Idle 상태 스폰 (OrderedHotdogs, allTotalPrice 초기화)
-		cuM->SpawnCustomer();
-
+		// 영업시간 종료가 아닐 경우에만
+		if (!gm->bClosingTime)
+			// 새 손님 Idle 상태 스폰 (OrderedHotdogs, allTotalPrice 초기화)
+			cuM->SpawnCustomer();
+		else
+			customerState = ECustomerState::EXIT;	// 대화창 UI 구현되면 수정하기
 
 	}
 	else
@@ -241,7 +242,11 @@ void ACustomer::ExitRotateAndMove(FRotator exitTargetRot, FVector _exitTargetLoc
 	// 손님이 퇴장 위치까지 거의 다 왔으면
 	if (FVector::Dist(GetActorLocation(), _exitTargetLoc) < 100.f)
 	{
-		//새 손님 입장 상태로 바꿔줌
-		cuM->SetNewCustomer();
+		// 영업시간 종료가 아닐 경우에만
+		if (!gm->bClosingTime)
+			//새 손님 입장 상태로 바꿔줌
+			cuM->SetNewCustomer();
+		else
+			cuM->bCanPlaying = false;
 	}
 }

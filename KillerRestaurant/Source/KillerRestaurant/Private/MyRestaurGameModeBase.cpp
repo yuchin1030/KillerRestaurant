@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include "GameFramework/SpringArmComponent.h"
+#include "CustomerManager.h"
 
 AMyRestaurGameModeBase::AMyRestaurGameModeBase()
 {
@@ -35,13 +36,16 @@ void AMyRestaurGameModeBase::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("player is null"));
 	}
+
+    cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+
 }
 
 void AMyRestaurGameModeBase::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (bRestaurantClosed)
+    if (bClosingTime)
         return;
 
     timeElapsed += DeltaTime;
@@ -64,9 +68,10 @@ void AMyRestaurGameModeBase::Tick(float DeltaTime)
             {
                 gameHour = 18;  // 18시로 고정
                 gameMinute = 0; // 00분으로 고정
-                // 손님이 더 이상 들어오지 않도록 처리
-                bRestaurantClosed = true;
 
+                // 손님이 더 이상 들어오지 않도록 처리
+                bClosingTime = true;
+                cuM->SetClosing();
             }
         }
         UE_LOG(LogTemp, Warning, TEXT("%02d:%02d"), gameHour, gameMinute);

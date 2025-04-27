@@ -15,6 +15,7 @@
 #include "RawSausage.h"
 #include "Dough.h"
 #include "CookManager.h"
+#include "CustomerManager.h"
 #include <Kismet/GameplayStatics.h>
 #include "GrilledSausage.h"
 #include "PicklesBox.h"
@@ -85,7 +86,8 @@ void AKillerRestaurantCharacter::BeginPlay()
 	}
 
 	coM = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
-	
+	cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+
 	gm = Cast<AMyRestaurGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
@@ -183,10 +185,10 @@ void AKillerRestaurantCharacter::Interact()
 
 void AKillerRestaurantCharacter::Click()
 {
-	if (gm)
+	if (cuM)
 	{
 		// 영업시간 끝났으면 더 이상 불가
-		if (gm->bRestaurantClosed)
+		if (!cuM->bCanPlaying)
 			return;
 	}
 	else

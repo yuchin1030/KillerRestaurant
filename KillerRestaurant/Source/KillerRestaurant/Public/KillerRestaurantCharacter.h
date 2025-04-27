@@ -66,6 +66,9 @@ public:
 	class ACookManager* coM;
 
 	UPROPERTY(EditAnywhere)
+	class ACustomerManager* cuM;
+
+	UPROPERTY(EditAnywhere)
 	class AMyRestaurGameModeBase* gm;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")

@@ -60,6 +60,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UWidgetComponent* orderWidgetComp;
 
+	UPROPERTY(EditAnywhere)
+	class AMyRestaurGameModeBase* gm;
 	//UPROPERTY()
 	//class UHotdogOrderWidget* hotdogOrderUI;
 

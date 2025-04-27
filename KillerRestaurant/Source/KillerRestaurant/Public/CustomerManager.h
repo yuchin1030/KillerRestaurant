@@ -93,6 +93,7 @@ public:
 
 	bool bSpawnNewCustomer;
 	bool bOrdered;
+	bool bCanPlaying = true;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TMap<FHotdogOrder, float> OrderedHotdogs;
@@ -123,7 +124,8 @@ public:
 	UFUNCTION()
 	void SetPlayerCameraView(bool bWaiting);
 
-
+	UFUNCTION()
+	void SetClosing();
 
 	FVector cameraTargetLoc;
 	FRotator cameraTargetRot;
