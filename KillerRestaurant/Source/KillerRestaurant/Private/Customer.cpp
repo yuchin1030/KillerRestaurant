@@ -10,8 +10,8 @@
 #include "Components/ArrowComponent.h"
 #include <Kismet/KismetMathLibrary.h>
 #include "Components/WidgetComponent.h"
-#include "HotdogOrderWidget.h"
 #include "MyRestaurGameModeBase.h"
+#include "CustomerDialogueWidget.h"
 
 ACustomer::ACustomer()
 {
@@ -176,6 +176,17 @@ void ACustomer::Check(float _DeltaTime)
 		// 대화 UI 및 
 		FString selectedDialogue = cuM->GetCustomerDialogue(totalSatisfaction);
 		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *selectedDialogue);
+
+		if (dialogueUI_bp)
+		{
+			dialogueUI = CreateWidget<UCustomerDialogueWidget>(GetWorld(), dialogueUI_bp);
+
+			if (dialogueUI)
+			{
+				dialogueUI->AddToViewport();
+				dialogueUI->SetDialogueText(selectedDialogue);
+			}
+		}
 
 		// 영업시간 종료가 아닐 경우에만
 		if (!gm->bClosingTime)

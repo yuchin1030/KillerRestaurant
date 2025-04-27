@@ -50,6 +50,9 @@ class AKillerRestaurantCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ia_click;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ia_shoot;
+
 public:
 	AKillerRestaurantCharacter();
 	
@@ -85,6 +88,9 @@ public:
 
 	UFUNCTION()
 	void Click();
+
+	UFUNCTION()
+	void Shoot();
 
 	UFUNCTION()
 	void OnOverlapNPCBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
