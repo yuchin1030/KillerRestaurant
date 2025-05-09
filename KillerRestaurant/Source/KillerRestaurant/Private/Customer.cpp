@@ -177,16 +177,10 @@ void ACustomer::Check(float _DeltaTime)
 		FString selectedDialogue = cuM->GetCustomerDialogue(totalSatisfaction);
 		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *selectedDialogue);
 
-		if (dialogueUI_bp)
-		{
-			dialogueUI = CreateWidget<UCustomerDialogueWidget>(GetWorld(), dialogueUI_bp);
+		cuM->dialogueUI->SetDialogueText(selectedDialogue);
+		cuM->dialogueUI->SetVisibility(ESlateVisibility::Visible);
 
-			if (dialogueUI)
-			{
-				dialogueUI->AddToViewport();
-				dialogueUI->SetDialogueText(selectedDialogue);
-			}
-		}
+		
 
 		// 영업시간 종료가 아닐 경우에만
 		if (!gm->bClosingTime)

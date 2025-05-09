@@ -106,6 +106,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
 	TArray<UCustomerDialougeDataAsset*> AllDialogueDatas;
 
+	UPROPERTY()
+	class UCustomerDialogueWidget* dialogueUI;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	TSubclassOf<UUserWidget> dialogueUI_bp;
+
 	UFUNCTION()
 	void SpawnCustomer();
 

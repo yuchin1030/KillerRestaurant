@@ -10,6 +10,7 @@
 #include "CustomerDialougeDataAsset.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/AssetManager.h"
+#include "CustomerDialogueWidget.h"
 
 ACustomerManager::ACustomerManager()
 {
@@ -54,6 +55,17 @@ void ACustomerManager::BeginPlay()
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("Loaded %d Dialogue Assets"), AllDialogueDatas.Num());
+
+	if (dialogueUI_bp)
+	{
+		dialogueUI = CreateWidget<UCustomerDialogueWidget>(GetWorld(), dialogueUI_bp);
+
+		if (dialogueUI)
+		{
+			dialogueUI->AddToViewport();
+			dialogueUI->SetVisibility(ESlateVisibility::Hidden); // 초기에 화면에 안 보이게 설정
+		}
+	}
 
 }
 

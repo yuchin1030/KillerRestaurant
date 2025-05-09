@@ -63,11 +63,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AMyRestaurGameModeBase* gm;
 
-	UPROPERTY()
+	/*UPROPERTY()
 	class UCustomerDialogueWidget* dialogueUI;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	TSubclassOf<UUserWidget> dialogueUI_bp;
+	TSubclassOf<UUserWidget> dialogueUI_bp;*/
 
 	UFUNCTION()
 	void ExitRotateAndMove(FRotator exitTargetRot, FVector _exitTargetLoc, float DeltaTime);
