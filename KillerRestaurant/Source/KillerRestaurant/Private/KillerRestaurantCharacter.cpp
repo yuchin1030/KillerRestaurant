@@ -85,10 +85,11 @@ void AKillerRestaurantCharacter::BeginPlay()
 
 			playerQuestListUI->UpdateQuestUI("0", "1");
 
-			FTimerHandle hdl;
+			// 퀘스트 UI 갱신 테스트
+			/*FTimerHandle hdl;
 			GetWorldTimerManager().SetTimer(hdl, [&]() {
 				playerQuestListUI->UpdateQuestUI("0", "3");
-			}, 5, false);
+			}, 5, false);*/
 		}
 	}
 

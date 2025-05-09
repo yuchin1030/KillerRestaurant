@@ -44,17 +44,15 @@ void ACustomerManager::BeginPlay()
 		UCustomerDialougeDataAsset* DialogueAsset = Cast<UCustomerDialougeDataAsset>(Asset.GetAsset());
 		if (DialogueAsset)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("dddddddddddd"));
-
 			AllDialogueDatas.Add(DialogueAsset);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("DialogueAsset is null"));
+			UE_LOG(LogTemp, Warning, TEXT("CustomerDialougeDataAsset is null"));
 		}
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("Loaded %d Dialogue Assets"), AllDialogueDatas.Num());
+	UE_LOG(LogTemp, Warning, TEXT("CustomerDialougeDataAsset: Loaded %d Dialogue Assets"), AllDialogueDatas.Num());
 
 	if (dialogueUI_bp)
 	{

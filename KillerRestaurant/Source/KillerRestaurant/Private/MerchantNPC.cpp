@@ -36,5 +36,6 @@ void AMerchantNPC::StartInteract()
 	UGameplayStatics::OpenLevel(GetWorld(), FName("PizzaRestaurant"));	// FName()에 꼭 가두기!!
 	
 	 //대화 UI창
+
 }
 

@@ -11,25 +11,23 @@
  */
 
 USTRUCT(BlueprintType)
-struct FDialogueLine
+struct FNPCDialogueEntry
 {
     GENERATED_BODY()
 
-    // 대사 ID
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FName dialogueID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Speaker;
 
-    // 대사 내용
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString dialogueText;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Dialogue;
 
-    // 퀘스트 진행 상태(Accepted, Completed...)
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FString> Conditions;
+	// 선택지(버튼 등)로 표시될 텍스트 목록
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FText> Choices;
 
-    // 다음 대사
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FName> NextDialogueIDs;
+	// 선택지 따라 이동할 대사 인덱스
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> NextIndexes;  
 };
 
 UCLASS()
@@ -39,5 +37,5 @@ class KILLERRESTAURANT_API UNPCDialogueAsset : public UPrimaryDataAsset
 	
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FDialogueLine> dialogueLines;
+    TArray<FNPCDialogueEntry> Dialogues;
 };
