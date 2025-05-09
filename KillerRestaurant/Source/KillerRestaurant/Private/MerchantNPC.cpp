@@ -10,8 +10,6 @@
 AMerchantNPC::AMerchantNPC()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	//dialogueAsset->dialogueLines[0] = "01";
 }
 
 void AMerchantNPC::BeginPlay()

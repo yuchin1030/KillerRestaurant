@@ -78,7 +78,7 @@ public:
 	float playerGold = 0;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	FName playercurrentQuestID = "1";
+	FName playercurrentQuestID = "0_1";
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UWidgetInteractionComponent* WidgetInteraction;

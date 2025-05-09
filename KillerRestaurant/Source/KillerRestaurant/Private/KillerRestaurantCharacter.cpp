@@ -82,6 +82,13 @@ void AKillerRestaurantCharacter::BeginPlay()
 		if (playerQuestListUI != nullptr)
 		{
 			playerQuestListUI->AddToViewport();
+
+			playerQuestListUI->UpdateQuestUI("0", "1");
+
+			FTimerHandle hdl;
+			GetWorldTimerManager().SetTimer(hdl, [&]() {
+				playerQuestListUI->UpdateQuestUI("0", "3");
+			}, 5, false);
 		}
 	}
 
@@ -89,6 +96,7 @@ void AKillerRestaurantCharacter::BeginPlay()
 	cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
 
 	gm = Cast<AMyRestaurGameModeBase>(GetWorld()->GetAuthGameMode());
+
 }
 
 void AKillerRestaurantCharacter::Tick(float DeltaTime)
