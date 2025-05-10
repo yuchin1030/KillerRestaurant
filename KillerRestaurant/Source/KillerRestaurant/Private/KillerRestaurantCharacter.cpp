@@ -10,7 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "MerchantNPC.h"
+#include "NPCBase.h"
 #include "PlayerQuestListWidget.h"
 #include "RawSausage.h"
 #include "Dough.h"
@@ -26,6 +26,9 @@
 #include "MyRestaurGameModeBase.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "Components/WidgetComponent.h"
+#include "NPCManager.h"
+#include "EngineUtils.h"
+#include "NPCDialogueAsset.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -72,9 +75,6 @@ void AKillerRestaurantCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AKillerRestaurantCharacter::OnOverlapNPCBegin);
-	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AKillerRestaurantCharacter::OnOverlapNPCEnd);
-
 	if (playerQuestListUI_bp != nullptr)
 	{
 		playerQuestListUI = CreateWidget<UPlayerQuestListWidget>(GetWorld(), playerQuestListUI_bp);
@@ -97,6 +97,11 @@ void AKillerRestaurantCharacter::BeginPlay()
 	cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
 
 	gm = Cast<AMyRestaurGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	for (TActorIterator<ANPCManager> It(GetWorld()); It; ++It)
+	{
+		npcM = *It;
+	}
 
 }
 
@@ -180,17 +185,42 @@ void AKillerRestaurantCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+
+
 void AKillerRestaurantCharacter::Interact()
 {
-	if (merchantNPC)
+	// 오버랩한 NPC가 존재하고, F키를 눌렀으면
+	if (currentOverlappedNPC)
 	{
-		merchantNPC->StartInteract();
-		playerQuestListUI->CompleteStartQuest();
+		if (npcM)
+		{
+			// 처음에 0.1로 시작
+			SetNPCDialogueEntry(currentDialogueIndex);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No npcManager"));
+		}
+		
+		//playerQuestListUI->CompleteStartQuest();
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("merchantNPC is null"));
+		UE_LOG(LogTemp, Warning, TEXT("currentOverlappedNPC is null"));
 	}
+}
+
+void AKillerRestaurantCharacter::SetNPCDialogueEntry(float DialogueIndex)
+{
+	currentDialogueIndex = DialogueIndex;
+
+	// 오버랩된 NPC이름, 현재 플레이어의 퀘스트 진행도와 일치하는 대사출력
+	FNPCDialogueEntry Entry = npcM->GetDialogueEntry(currentOverlappedNPC->SpeakerName, playercurrentQuestID, currentDialogueIndex);
+
+	//UE_LOG(LogTemp, Warning, TEXT("currentOverlappedNPC: %s : %s"), *currentOverlappedNPC->SpeakerName.ToString(), *DialogueText);
+
+	// 대화창 UI 띄우기
+	npcM->ShowDialogueUI(Entry);
 }
 
 void AKillerRestaurantCharacter::Click()
@@ -300,22 +330,4 @@ void AKillerRestaurantCharacter::Shoot()
 	params.AddIgnoredActor(this); // 자기 자신 무시
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end,ECC_Visibility, params);
-}
-
-void AKillerRestaurantCharacter::OnOverlapNPCBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	AMerchantNPC* actor = Cast<AMerchantNPC>(OtherActor);
-
-	if (actor)
-		merchantNPC = actor;
-	else
-		UE_LOG(LogTemp, Warning, TEXT("merchantNPC is null"));
-}
-
-void AKillerRestaurantCharacter::OnOverlapNPCEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (merchantNPC == OtherActor)
-		merchantNPC = nullptr;
-	else
-		UE_LOG(LogTemp, Warning, TEXT("merchantNPC exists"));
 }

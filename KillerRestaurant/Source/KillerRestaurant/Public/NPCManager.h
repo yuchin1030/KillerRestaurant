@@ -20,6 +20,7 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
 	TArray<UNPCDialogueAsset*> AllDialogueDatas;
 
@@ -29,6 +30,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TSubclassOf<UUserWidget> dialogueUI_bp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 DialogueIndex;  // 현재 대사의 인덱스
+
 	UFUNCTION()
-	FString GetNPCDialogue(const FName& SpeakerName);
+	FNPCDialogueEntry GetDialogueEntry(const FName& SpeakerName, FName CurrentQuestID, float CurrentDialogueIndex);
+
+	UFUNCTION()
+	void ShowDialogueUI(FNPCDialogueEntry _Entry);
 };

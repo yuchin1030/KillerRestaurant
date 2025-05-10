@@ -43,6 +43,17 @@ void ANPCManager::BeginPlay()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("NPCDialogueAsset: Loaded %d Dialogue Assets"), AllDialogueDatas.Num());
+
+	if (dialogueUI_bp)
+	{
+		dialogueUI = CreateWidget<UCustomerDialogueWidget>(GetWorld(), dialogueUI_bp);
+
+		if (dialogueUI)
+		{
+			dialogueUI->AddToViewport();
+			dialogueUI->SetVisibility(ESlateVisibility::Hidden); // 초기에 화면에 안 보이게 설정
+		}
+	}
 }
 
 void ANPCManager::Tick(float DeltaTime)
@@ -51,22 +62,30 @@ void ANPCManager::Tick(float DeltaTime)
 
 }
 
-FString ANPCManager::GetNPCDialogue(const FName& SpeakerName)
+FNPCDialogueEntry ANPCManager::GetDialogueEntry(const FName& SpeakerName, FName CurrentQuestID, float CurrentDialogueIndex)
 {
-	for (UNPCDialogueAsset* data : AllDialogueDatas)
+	for (UNPCDialogueAsset* Data : AllDialogueDatas)
 	{
-		if (data)
+		if (Data)
 		{
-			for (const FNPCDialogueEntry& Entry : data->Dialogues)
+			for (const FNPCDialogueEntry& Entry : Data->NPCDialogues)
 			{
-				if (Entry.Speaker.ToString() == SpeakerName.ToString())
+				if (Entry.Speaker.ToString() == SpeakerName.ToString() &&
+					Entry.QuestID == CurrentQuestID &&
+					Entry.DialogueIndex == CurrentDialogueIndex)
 				{
-					return Entry.Dialogue.ToString(); // 첫 번째 대사 반환
+					return Entry;
 				}
 			}
 		}
 	}
 
-	return TEXT("대사를 찾을 수 없습니다.");
+	return FNPCDialogueEntry();
+}
+
+void ANPCManager::ShowDialogueUI(FNPCDialogueEntry _Entry)
+{
+	dialogueUI->SetDialogueUI(_Entry.Speaker, _Entry.Dialogue, _Entry.Choices, _Entry.NextIndexes);
+	dialogueUI->SetVisibility(ESlateVisibility::Visible);
 }
 

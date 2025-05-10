@@ -177,7 +177,7 @@ void ACustomer::Check(float _DeltaTime)
 		FString selectedDialogue = cuM->GetCustomerDialogue(totalSatisfaction);
 		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *selectedDialogue);
 
-		cuM->dialogueUI->SetDialogueText(selectedDialogue);
+		cuM->dialogueUI->SetDialogueUI(FText::GetEmpty(), selectedDialogue, TArray<FText>(), TArray<float>());
 		cuM->dialogueUI->SetVisibility(ESlateVisibility::Visible);
 
 		

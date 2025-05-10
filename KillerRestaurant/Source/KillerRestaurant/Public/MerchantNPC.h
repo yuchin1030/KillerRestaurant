@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "NPCBase.h"
 #include "MerchantNPC.generated.h"
 
 UCLASS()
-class KILLERRESTAURANT_API AMerchantNPC : public ACharacter
+class KILLERRESTAURANT_API AMerchantNPC : public ANPCBase
 {
 	GENERATED_BODY()
 
@@ -22,10 +22,10 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MySettings")
-	class UNPCDialogueAsset* dialogueAsset;
+
 
 	UFUNCTION()
 	void StartInteract();
+
 
 };

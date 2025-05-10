@@ -2,14 +2,13 @@
 
 
 #include "MerchantNPC.h"
-#include "NPCDialogueAsset.h"
 #include "Kismet/GameplayStatics.h"
 
-
-// Sets default values
 AMerchantNPC::AMerchantNPC()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	SpeakerName = "Merchant";
 }
 
 void AMerchantNPC::BeginPlay()
