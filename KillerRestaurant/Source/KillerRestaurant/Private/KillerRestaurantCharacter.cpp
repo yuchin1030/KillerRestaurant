@@ -30,6 +30,7 @@
 #include "EngineUtils.h"
 #include "NPCDialogueAsset.h"
 #include <ItemBase.h>
+#include "InventoryWidget.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -94,6 +95,21 @@ void AKillerRestaurantCharacter::BeginPlay()
 		}
 	}
 
+	if (inventoryUI_bp)
+	{
+		inventoryUI = CreateWidget<UInventoryWidget>(GetWorld(), inventoryUI_bp);
+		if (inventoryUI)
+		{
+			// 위젯은 화면에 표시되지 않도록 설정 (초기 상태)
+			inventoryUI->AddToViewport();
+			inventoryUI->SetVisibility(ESlateVisibility::Hidden);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No inventoryUI"));
+		}
+	}
+
 	coM = Cast<ACookManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACookManager::StaticClass()));
 	cuM = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
 
@@ -145,6 +161,8 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
 
 		EnhancedInputComponent->BindAction(ia_RightClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::PickUpItem);
+
+		EnhancedInputComponent->BindAction(ia_Inventory, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::ToggleInventory);
 
 	}
 	else
@@ -390,6 +408,22 @@ void AKillerRestaurantCharacter::PickUpItem()
 	}
 }
 
+void AKillerRestaurantCharacter::ToggleInventory()
+{
+	if (inventoryUI)
+	{
+		// i키를 누르면 인벤토리 창 보이거나 숨기기
+		if (inventoryUI->IsVisible())
+		{
+			inventoryUI->SetVisibility(ESlateVisibility::Hidden);
+		}
+		else
+		{
+			inventoryUI->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+}
+
 void AKillerRestaurantCharacter::AddItemToInventory(const FItemData& NewItem)
 {
 	// 기존 아이템 있으면 수량만 추가
@@ -407,8 +441,11 @@ void AKillerRestaurantCharacter::AddItemToInventory(const FItemData& NewItem)
 	inventory.Add(NewItem);
 	UE_LOG(LogTemp, Warning, TEXT("Add New Item - %s : %d"), *NewItem.ItemName.ToString(), NewItem.ItemAmount);
 
+	// 인벤토리 내부 값들 출력
 	for (const FItemData& Item : inventory)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Inventory - %s : %d\n"), *Item.ItemName.ToString(), Item.ItemAmount);
 	}
+
+	inventoryUI->UpdateInventory(inventory);
 }

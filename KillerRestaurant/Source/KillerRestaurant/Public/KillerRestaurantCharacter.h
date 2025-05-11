@@ -56,6 +56,9 @@ class AKillerRestaurantCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ia_RightClick;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ia_Inventory;
+
 public:
 	AKillerRestaurantCharacter();
 
@@ -67,6 +70,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TSubclassOf<UUserWidget> playerQuestListUI_bp;
+
+	UPROPERTY()
+	class UInventoryWidget* inventoryUI;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	TSubclassOf<UUserWidget> inventoryUI_bp;
 
 	UPROPERTY(EditAnywhere)
 	class ACookManager* coM;
@@ -113,6 +122,9 @@ public:
 
 	UFUNCTION()
 	void PickUpItem();
+
+	UFUNCTION()
+	void ToggleInventory();
 
 	void AddItemToInventory(const FItemData& itemData);
 protected:
