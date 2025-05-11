@@ -22,10 +22,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
-
-	UFUNCTION()
-	void StartInteract();
+	virtual void StartInteract() override;
 
 
 };

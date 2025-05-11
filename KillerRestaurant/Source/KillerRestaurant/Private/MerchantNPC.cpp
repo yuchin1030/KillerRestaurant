@@ -2,7 +2,6 @@
 
 
 #include "MerchantNPC.h"
-#include "Kismet/GameplayStatics.h"
 
 AMerchantNPC::AMerchantNPC()
 {
@@ -31,10 +30,6 @@ void AMerchantNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMerchantNPC::StartInteract()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Start Interact with merchantNPC"));
-	UGameplayStatics::OpenLevel(GetWorld(), FName("PizzaRestaurant"));	// FName()에 꼭 가두기!!
 	
-	 //대화 UI창
-
 }
 

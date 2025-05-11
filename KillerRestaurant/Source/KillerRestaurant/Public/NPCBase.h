@@ -22,6 +22,10 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// 앞으로 NPC마다 StartInteract()가 달라질 예정, 따라서 ANPCBase에 가상 함수로 정의하고, 각 자식이 override하게 만들면 더 깔끔
+	// virtual 함수라면 오버라이드된 함수가 호출되어야 함
+	virtual void StartInteract();
+
 	UPROPERTY(EditAnywhere)
 	FName SpeakerName;
 

@@ -29,6 +29,7 @@
 #include "NPCManager.h"
 #include "EngineUtils.h"
 #include "NPCDialogueAsset.h"
+#include <ItemBase.h>
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -138,10 +139,13 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AKillerRestaurantCharacter::Look);
 
-		EnhancedInputComponent->BindAction(ia_interact, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Interact);
+		EnhancedInputComponent->BindAction(ia_Interact, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Interact);
 
-		EnhancedInputComponent->BindAction(ia_click, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Click);
-		EnhancedInputComponent->BindAction(ia_shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Click);
+		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
+
+		EnhancedInputComponent->BindAction(ia_RightClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::PickUpItem);
+
 	}
 	else
 	{
@@ -196,7 +200,19 @@ void AKillerRestaurantCharacter::SetInputBlocked(bool bBlocked)
 
 		// 이거 해줘야 UI 버튼 클릭됨
 		pc->bShowMouseCursor = bBlocked;
+
+		// 대화 초기화
+		currentDialogueIndex = 0;
 	}
+}
+
+void AKillerRestaurantCharacter::ButtonClickedTrigger(float DialogueIndex)
+{
+	if (currentOverlappedNPC && DialogueIndex == 0.2f)	// 0.2로 하면 안 됨
+	{
+		currentOverlappedNPC->StartInteract();
+	}
+		
 }
 
 void AKillerRestaurantCharacter::Interact()
@@ -217,7 +233,7 @@ void AKillerRestaurantCharacter::Interact()
 			UE_LOG(LogTemp, Warning, TEXT("No npcManager"));
 		}
 		
-		//playerQuestListUI->CompleteStartQuest();
+		
 	}
 	else
 	{
@@ -227,7 +243,7 @@ void AKillerRestaurantCharacter::Interact()
 
 void AKillerRestaurantCharacter::SetNPCDialogueEntry(float DialogueIndex)
 {
-	currentDialogueIndex = DialogueIndex;	// 0.2
+	currentDialogueIndex = DialogueIndex;	
 
 	// 오버랩된 NPC이름, 현재 플레이어의 퀘스트 진행도와 일치하는 대사출력
 	FNPCDialogueEntry Entry = npcM->GetDialogueEntry(currentOverlappedNPC->SpeakerName, playercurrentQuestID, currentDialogueIndex);
@@ -345,4 +361,54 @@ void AKillerRestaurantCharacter::Shoot()
 	params.AddIgnoredActor(this); // 자기 자신 무시
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end,ECC_Visibility, params);
+}
+
+void AKillerRestaurantCharacter::PickUpItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("RightClcik"));
+
+	FVector Start = FollowCamera->GetComponentLocation(); // 카메라 위치
+	FVector End = Start + (FollowCamera->GetForwardVector() * 1000.0f); // 500 유닛 전방
+
+	FHitResult hitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // 자기 자신은 무시
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECC_Visibility, Params);
+	
+	if (bHit)
+	{
+		AItemBase* hitItem = Cast<AItemBase>(hitResult.GetActor());
+		if (hitItem)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Get Item! : %s"), *hitItem->GetName());
+
+			AddItemToInventory(hitItem->itemData); // 인벤토리에 추가
+			hitItem->Destroy(); // 월드에서 제거
+		}
+		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 2.0f);
+	}
+}
+
+void AKillerRestaurantCharacter::AddItemToInventory(const FItemData& NewItem)
+{
+	// 기존 아이템 있으면 수량만 추가
+	for (FItemData& item : inventory)
+	{
+		if (item.ItemName == NewItem.ItemName)
+		{
+			item.ItemAmount += NewItem.ItemAmount;
+			UE_LOG(LogTemp, Warning, TEXT("Increase exist Item amount - %s : %d"), *item.ItemName.ToString(), item.ItemAmount);
+			return;
+		}
+	}
+
+	// 없으면 새로 추가
+	inventory.Add(NewItem);
+	UE_LOG(LogTemp, Warning, TEXT("Add New Item - %s : %d"), *NewItem.ItemName.ToString(), NewItem.ItemAmount);
+
+	for (const FItemData& Item : inventory)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inventory - %s : %d\n"), *Item.ItemName.ToString(), Item.ItemAmount);
+	}
 }

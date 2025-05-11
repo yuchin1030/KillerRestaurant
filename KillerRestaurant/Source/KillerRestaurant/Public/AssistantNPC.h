@@ -16,4 +16,6 @@ class KILLERRESTAURANT_API AAssistantNPC : public ANPCBase
 	
 public:
 	AAssistantNPC();
+
+	virtual void StartInteract() override;
 };

@@ -126,6 +126,7 @@ void UCustomerDialogueWidget::OnButtonMiddleClicked()
 
 		// NPC와 상호작용 끝났을 경우(UI 대화창 닫혔을 경우) 플레이어 시선 및 움직임 활성화
 		player->SetInputBlocked(false);
+		player->ButtonClickedTrigger(0.2);
 
 		UE_LOG(LogTemp, Warning, TEXT("UCustomerDialogueWidget : No Next Index - Dialogue Ends"));
 		
@@ -141,7 +142,7 @@ void UCustomerDialogueWidget::RequestNextDialogue(float NextDialogueIndex)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UCustomerDialogueWidget : NO PC"));
+		UE_LOG(LogTemp, Warning, TEXT("UCustomerDialogueWidget : NO player"));
 
 	}
 }

@@ -45,13 +45,16 @@ class AKillerRestaurantCharacter : public ACharacter
 	UInputAction* LookAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ia_interact;
+	UInputAction* ia_Interact;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ia_click;
+	UInputAction* ia_LeftClick;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ia_shoot;
+	UInputAction* ia_Shoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ia_RightClick;
 
 public:
 	AKillerRestaurantCharacter();
@@ -87,11 +90,17 @@ public:
 
 	float currentDialogueIndex = 0;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	TArray<FItemData> inventory;
+
 	UFUNCTION()
 	void SetNPCDialogueEntry(float DialogueIndex);
 
 	UFUNCTION()
 	void SetInputBlocked(bool bBlocked);
+
+	UFUNCTION()
+	void ButtonClickedTrigger(float DialogueIndex);
 
 	UFUNCTION()
 	void Interact();
@@ -102,6 +111,10 @@ public:
 	UFUNCTION()
 	void Shoot();
 
+	UFUNCTION()
+	void PickUpItem();
+
+	void AddItemToInventory(const FItemData& itemData);
 protected:
 
 	/** Called for movement input */
