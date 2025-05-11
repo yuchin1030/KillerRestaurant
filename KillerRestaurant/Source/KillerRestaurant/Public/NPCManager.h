@@ -30,8 +30,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TSubclassOf<UUserWidget> dialogueUI_bp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 DialogueIndex;  // 현재 대사의 인덱스
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//int32 DialogueIndex;  // 현재 대사의 인덱스
 
 	UFUNCTION()
 	FNPCDialogueEntry GetDialogueEntry(const FName& SpeakerName, FName CurrentQuestID, float CurrentDialogueIndex);

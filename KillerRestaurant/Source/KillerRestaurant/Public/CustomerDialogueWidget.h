@@ -18,6 +18,9 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
+
+	class AKillerRestaurantCharacter* player;
+
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Text_Dialogue;
 
@@ -42,6 +45,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Text_ButtonM;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TArray<float> NextIndexValues;
 
 	UFUNCTION()
@@ -57,4 +61,6 @@ public:
 	UFUNCTION()
 	void OnButtonMiddleClicked();
 
+	UFUNCTION()
+	void RequestNextDialogue(float NextDialogueIndex);
 };

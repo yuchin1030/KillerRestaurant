@@ -185,7 +185,19 @@ void AKillerRestaurantCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AKillerRestaurantCharacter::SetInputBlocked(bool bBlocked)
+{
+	APlayerController* pc = Cast<APlayerController>(GetController());
+	if (pc)
+	{
+		// 플레이어 시선 및 이동 막기(true) 또는 활성화(false)
+		pc->SetIgnoreMoveInput(bBlocked);
+		pc->SetIgnoreLookInput(bBlocked);
 
+		// 이거 해줘야 UI 버튼 클릭됨
+		pc->bShowMouseCursor = bBlocked;
+	}
+}
 
 void AKillerRestaurantCharacter::Interact()
 {
@@ -194,7 +206,10 @@ void AKillerRestaurantCharacter::Interact()
 	{
 		if (npcM)
 		{
-			// 처음에 0.1로 시작
+			// NPC와 상호작용 시(UI 대화할 경우) 플레이어 시선 및 움직임 block
+			SetInputBlocked(true);
+
+			// 처음에 0으로 시작, 이후엔 갱신된 currentDialogueIndex
 			SetNPCDialogueEntry(currentDialogueIndex);
 		}
 		else
@@ -212,7 +227,7 @@ void AKillerRestaurantCharacter::Interact()
 
 void AKillerRestaurantCharacter::SetNPCDialogueEntry(float DialogueIndex)
 {
-	currentDialogueIndex = DialogueIndex;
+	currentDialogueIndex = DialogueIndex;	// 0.2
 
 	// 오버랩된 NPC이름, 현재 플레이어의 퀘스트 진행도와 일치하는 대사출력
 	FNPCDialogueEntry Entry = npcM->GetDialogueEntry(currentOverlappedNPC->SpeakerName, playercurrentQuestID, currentDialogueIndex);

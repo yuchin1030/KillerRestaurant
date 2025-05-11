@@ -91,6 +91,9 @@ public:
 	void SetNPCDialogueEntry(float DialogueIndex);
 
 	UFUNCTION()
+	void SetInputBlocked(bool bBlocked);
+
+	UFUNCTION()
 	void Interact();
 
 	UFUNCTION()
