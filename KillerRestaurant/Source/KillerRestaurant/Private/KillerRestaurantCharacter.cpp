@@ -426,20 +426,26 @@ void AKillerRestaurantCharacter::ToggleInventory()
 
 void AKillerRestaurantCharacter::AddItemToInventory(const FItemData& NewItem)
 {
+	bool bFound = false;
 	// 기존 아이템 있으면 수량만 추가
 	for (FItemData& item : inventory)
-	{
+	{		
 		if (item.ItemName == NewItem.ItemName)
 		{
 			item.ItemAmount += NewItem.ItemAmount;
 			UE_LOG(LogTemp, Warning, TEXT("Increase exist Item amount - %s : %d"), *item.ItemName.ToString(), item.ItemAmount);
-			return;
-		}
+			bFound = true;
+			break;
+		}		
 	}
 
-	// 없으면 새로 추가
-	inventory.Add(NewItem);
-	UE_LOG(LogTemp, Warning, TEXT("Add New Item - %s : %d"), *NewItem.ItemName.ToString(), NewItem.ItemAmount);
+	if (!bFound)
+	{
+		// 없으면 새로 추가
+		inventory.Add(NewItem);
+		UE_LOG(LogTemp, Warning, TEXT("Add New Item - %s : %d"), *NewItem.ItemName.ToString(), NewItem.ItemAmount);
+	}
+	
 
 	// 인벤토리 내부 값들 출력
 	for (const FItemData& Item : inventory)
@@ -447,5 +453,8 @@ void AKillerRestaurantCharacter::AddItemToInventory(const FItemData& NewItem)
 		UE_LOG(LogTemp, Warning, TEXT("Inventory - %s : %d\n"), *Item.ItemName.ToString(), Item.ItemAmount);
 	}
 
-	inventoryUI->UpdateInventory(inventory);
+	if (inventoryUI)
+		inventoryUI->UpdateInventory(inventory);
+	else
+		UE_LOG(LogTemp, Warning, TEXT("InventoryUI is null"));
 }

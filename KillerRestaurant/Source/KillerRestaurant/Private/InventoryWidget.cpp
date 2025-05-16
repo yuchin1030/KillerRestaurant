@@ -39,7 +39,9 @@ void UInventoryWidget::NativeConstruct()
 void UInventoryWidget::UpdateInventory(const TArray<FItemData>& InventoryData)
 {
     // 실제 인벤토리 데이터 채워넣기
-    for (int32 i = 0; i < InventoryData.Num() && i < inventorySlots.Num(); ++i)
+    // 아직 표시할 인벤토리 데이터가 남아 있는지 확인, 슬롯 배열 크기보다 초과되지 않는지 확인
+    // 두 배열 중 작은 쪽의 길이만큼만 루프
+    for (int32 i = 0; i < InventoryData.Num() && i < inventorySlots.Num(); i++)
     {
         inventorySlots[i]->SetData(InventoryData[i]);
     }

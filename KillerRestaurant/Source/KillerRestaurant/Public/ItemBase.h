@@ -16,7 +16,7 @@ public:
 	FName ItemName;
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 ItemAmount;
+	int32 ItemAmount; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* ItemTexture;
