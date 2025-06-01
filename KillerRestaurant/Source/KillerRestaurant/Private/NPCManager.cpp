@@ -87,5 +87,8 @@ void ANPCManager::ShowDialogueUI(FNPCDialogueEntry _Entry)
 {
 	dialogueUI->SetDialogueUI(_Entry.Speaker, _Entry.Dialogue, _Entry.Choices, _Entry.NextIndexes);
 	dialogueUI->SetVisibility(ESlateVisibility::Visible);
+
+	UE_LOG(LogTemp, Warning, TEXT("_Entry.Speaker: %s : %s"), *_Entry.Speaker.ToString(), *_Entry.Dialogue);
+
 }
 

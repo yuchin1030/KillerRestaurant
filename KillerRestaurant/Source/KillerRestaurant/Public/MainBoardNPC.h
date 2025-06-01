@@ -1,0 +1,22 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "NPCBase.h"
+#include "MainBoardNPC.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class KILLERRESTAURANT_API AMainBoardNPC : public ANPCBase
+{
+	GENERATED_BODY()
+
+public:
+	AMainBoardNPC();
+
+	virtual void StartInteract() override;
+
+};

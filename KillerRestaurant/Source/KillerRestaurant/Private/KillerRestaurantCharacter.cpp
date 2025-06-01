@@ -219,8 +219,12 @@ void AKillerRestaurantCharacter::SetInputBlocked(bool bBlocked)
 		// 이거 해줘야 UI 버튼 클릭됨
 		pc->bShowMouseCursor = bBlocked;
 
-		// 대화 초기화
-		currentDialogueIndex = 0;
+		if (!bBlocked)
+		{
+			// 대화 초기화
+			currentDialogueIndex = 0;
+		}
+		
 	}
 }
 
@@ -266,7 +270,7 @@ void AKillerRestaurantCharacter::SetNPCDialogueEntry(float DialogueIndex)
 	// 오버랩된 NPC이름, 현재 플레이어의 퀘스트 진행도와 일치하는 대사출력
 	FNPCDialogueEntry Entry = npcM->GetDialogueEntry(currentOverlappedNPC->SpeakerName, playercurrentQuestID, currentDialogueIndex);
 
-	//UE_LOG(LogTemp, Warning, TEXT("currentOverlappedNPC: %s : %s"), *currentOverlappedNPC->SpeakerName.ToString(), *DialogueText);
+	UE_LOG(LogTemp, Warning, TEXT("currentOverlappedNPC: %s %f"), *currentOverlappedNPC->SpeakerName.ToString(), currentDialogueIndex);
 
 	// 대화창 UI 띄우기
 	npcM->ShowDialogueUI(Entry);
@@ -416,10 +420,12 @@ void AKillerRestaurantCharacter::ToggleInventory()
 		if (inventoryUI->IsVisible())
 		{
 			inventoryUI->SetVisibility(ESlateVisibility::Hidden);
+			SetInputBlocked(false);
 		}
 		else
 		{
 			inventoryUI->SetVisibility(ESlateVisibility::Visible);
+			SetInputBlocked(true);
 		}
 	}
 }
