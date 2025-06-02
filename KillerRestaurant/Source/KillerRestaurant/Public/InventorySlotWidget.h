@@ -25,6 +25,11 @@ public:
 	UPROPERTY()
 	FItemData CurrentItemData;
 
+	FItemData BackupItemData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MySettings")
+	UTexture2D* EmptyTexture;
+
 	UFUNCTION()
 	void SetData(const FItemData& ItemData);
 
