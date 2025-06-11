@@ -31,6 +31,8 @@
 #include "NPCDialogueAsset.h"
 #include <ItemBase.h>
 #include "InventoryWidget.h"
+#include "Floor2_InteractItemBase.h"
+#include "Floor2_RotateItemBase.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -158,12 +160,14 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(ia_Interact, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Interact);
 
 		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Click);
+		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Floor2_Click);
 		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
 
 		EnhancedInputComponent->BindAction(ia_RightClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::PickUpItem);
 
 		EnhancedInputComponent->BindAction(ia_Inventory, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::ToggleInventory);
 
+		EnhancedInputComponent->BindAction(ia_Back, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Back);
 	}
 	else
 	{
@@ -373,6 +377,44 @@ void AKillerRestaurantCharacter::Click()
 	}
 }
 
+void AKillerRestaurantCharacter::Floor2_Click()
+{
+	FHitResult hitResult;
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+
+	if (PC && PC->GetHitResultUnderCursor(ECC_Visibility, false, hitResult))
+	{
+		FString name = hitResult.GetActor()->GetName();
+
+		AActor* hitActor = hitResult.GetActor();
+
+		//UPrimitiveComponent* hitComp = hitResult.GetComponent();
+
+		float dist = FVector::Dist(hitResult.ImpactPoint, GetActorLocation());
+
+		if (dist <= 250.f) // 1000 cm = 10 meters
+		{
+			if (hitActor)
+			{
+				if (AFloor2_InteractItemBase* iib = Cast<AFloor2_InteractItemBase>(hitActor))
+				{
+					iib->ChangeCameraView();
+
+					// 플레이어 시선 및 이동 막기(true) 또는 활성화(false)
+					PC->SetIgnoreMoveInput(true);
+					PC->SetIgnoreLookInput(true);
+				}
+				else if (AFloor2_RotateItemBase* rib = Cast<AFloor2_RotateItemBase>(hitActor))
+				{
+					rib->ChangeRot();
+				}
+			}
+		}
+
+		
+	}
+}
+
 void AKillerRestaurantCharacter::Shoot()
 {
 	FVector start = FollowCamera->GetComponentLocation(); // 총구 위치
@@ -383,6 +425,13 @@ void AKillerRestaurantCharacter::Shoot()
 	params.AddIgnoredActor(this); // 자기 자신 무시
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end,ECC_Visibility, params);
+}
+
+void AKillerRestaurantCharacter::Back()
+{
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+
+	PC->SetViewTargetWithBlend(this, 0.5f); // 캐릭터 카메라로 뷰 전환
 }
 
 void AKillerRestaurantCharacter::PickUpItem()

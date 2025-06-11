@@ -59,6 +59,9 @@ class AKillerRestaurantCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ia_Inventory;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ia_Back;
+
 public:
 	AKillerRestaurantCharacter();
 
@@ -118,7 +121,13 @@ public:
 	void Click();
 
 	UFUNCTION()
+	void Floor2_Click();
+
+	UFUNCTION()
 	void Shoot();
+
+	UFUNCTION()
+	void Back();
 
 	UFUNCTION()
 	void PickUpItem();
