@@ -33,6 +33,8 @@
 #include "InventoryWidget.h"
 #include "Floor2_InteractItemBase.h"
 #include "Floor2_RotateItemBase.h"
+#include "Floor2_ColorItemBase.h"
+#include "CanInteract.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -49,7 +51,7 @@ AKillerRestaurantCharacter::AKillerRestaurantCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	// Configure character movement
+	// Configure character movementFF
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
@@ -126,7 +128,6 @@ void AKillerRestaurantCharacter::BeginPlay()
 
 void AKillerRestaurantCharacter::Tick(float DeltaTime)
 {
-	
 
 }
 
@@ -158,6 +159,8 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AKillerRestaurantCharacter::Look);
 
 		EnhancedInputComponent->BindAction(ia_Interact, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Interact);
+		EnhancedInputComponent->BindAction(ia_Interact, ETriggerEvent::Triggered, this, &AKillerRestaurantCharacter::Floor3_ChargeValueBeforeRotate);
+		EnhancedInputComponent->BindAction(ia_Interact, ETriggerEvent::Completed, this, &AKillerRestaurantCharacter::Floor3_CompleteChargeValue);
 
 		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Click);
 		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Floor2_Click);
@@ -261,10 +264,54 @@ void AKillerRestaurantCharacter::Interact()
 		
 		
 	}
+	else if (currentOverlappedInteractItem)
+	{
+		// 상호작용 가능한 장애물이어도 회전가능한 물체만 F키 눌렀을때 값 차징되게 하기
+		if (currentOverlappedInteractItem->ActorHasTag("InteractObstacle/RotatingItem"))
+		{
+			bKeyF_Charging = true;
+		}
+	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("currentOverlappedNPC is null"));
+		UE_LOG(LogTemp, Warning, TEXT("currentOverlappedNPC or currentOverlappedInteractItem is null"));
 	}
+}
+
+void AKillerRestaurantCharacter::Floor3_ChargeValueBeforeRotate()
+{
+	if (bKeyF_Charging)
+	{
+		keyF_ChargingValue += 0.01;
+
+		UE_LOG(LogTemp, Warning, TEXT("keyF_ChargingValue: %f"), keyF_ChargingValue);
+
+		// 차징 다 됐으면
+		if (keyF_ChargingValue >= 1)
+		{
+			// 차징 종료 및 값 원상복귀 후 해당 장애물 회전시키기
+			bKeyF_Charging = false;
+			keyF_ChargingValue = 0;
+
+			// 인터페이스 함수 호출 방법
+			// 클래스를 찾아와서 변환에 성공하면 해당 클래스는 ICanInteract를 상속 받은 클래스
+			ICanInteract* CanInteractInterface = Cast<ICanInteract>(currentOverlappedInteractItem);
+
+			//if (currentOverlappedInteractItem->GetClass()->ImplementsInterface(UCanInteract::StaticClass()))
+			//{
+			//	ICanInteract::Execute_RotateTarget(currentOverlappedInteractItem);
+			//}
+			if (CanInteractInterface)
+				CanInteractInterface->RotateTarget();
+		}
+		
+	}
+}
+
+void AKillerRestaurantCharacter::Floor3_CompleteChargeValue()
+{
+	// 상호작용 및 회전 가능한 오브젝트 대상; 중간에 F키 떼도 차징 값 0으로 복귀
+	keyF_ChargingValue = 0;
 }
 
 void AKillerRestaurantCharacter::SetNPCDialogueEntry(float DialogueIndex)
@@ -408,6 +455,10 @@ void AKillerRestaurantCharacter::Floor2_Click()
 				{
 					rib->ChangeRot();
 				}
+				else if (AFloor2_ColorItemBase* cib = Cast<AFloor2_ColorItemBase>(hitActor))
+				{
+					cib->ChangeColor();
+				}
 			}
 		}
 
@@ -512,4 +563,13 @@ void AKillerRestaurantCharacter::AddItemToInventory(const FItemData& NewItem)
 		inventoryUI->UpdateInventory(inventory);
 	else
 		UE_LOG(LogTemp, Warning, TEXT("InventoryUI is null"));
+}
+
+void AKillerRestaurantCharacter::TakeDamage(float damageAmount)
+{
+	if (playerHP > 0)
+	{
+		playerHP -= damageAmount;
+		UE_LOG(LogTemp, Warning, TEXT("playerHP: %f"), playerHP);
+	}
 }

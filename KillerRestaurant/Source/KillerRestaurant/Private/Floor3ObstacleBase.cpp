@@ -1,0 +1,59 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Floor3ObstacleBase.h"
+#include "Kismet/KismetSystemLibrary.h" 
+#include <Kismet/GameplayStatics.h>
+#include "KillerRestaurantCharacter.h"
+
+AFloor3ObstacleBase::AFloor3ObstacleBase()
+{
+	PrimaryActorTick.bCanEverTick = true;
+
+}
+
+void AFloor3ObstacleBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+void AFloor3ObstacleBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AFloor3ObstacleBase::OnObstacleOverlapDamage(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	{
+		// 데미지처리
+		UE_LOG(LogTemp, Warning, TEXT("Apply Damage"));
+
+		class AKillerRestaurantCharacter* player = Cast<AKillerRestaurantCharacter>(OtherActor);
+
+		player->TakeDamage(ObstacleInfo.damage);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor is NULL or not have player tag"));
+	}
+}
+
+void AFloor3ObstacleBase::OnObstacleOverlapInteract(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	{
+		class AKillerRestaurantCharacter* player = Cast<AKillerRestaurantCharacter>(OtherActor);
+
+		player->currentOverlappedInteractItem = this;
+
+		UE_LOG(LogTemp, Warning, TEXT("InteractItem: %s"), *player->currentOverlappedInteractItem->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor is NULL or not have player tag"));
+	}
+}
+

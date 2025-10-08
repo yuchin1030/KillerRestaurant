@@ -69,6 +69,9 @@ public:
 	class ANPCBase* currentOverlappedNPC;
 
 	UPROPERTY()
+	class AActor* currentOverlappedInteractItem;
+
+	UPROPERTY()
 	class UPlayerQuestListWidget* playerQuestListUI;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
@@ -95,6 +98,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	FName playercurrentQuestID = "0_3";
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	float playerHP = 100;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UWidgetInteractionComponent* WidgetInteraction;
 
@@ -104,6 +110,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	TArray<FItemData> inventory;
+
+	bool bKeyF_Charging;
+
+	float keyF_ChargingValue = 0;
+
 
 	UFUNCTION()
 	void SetNPCDialogueEntry(float DialogueIndex);
@@ -116,6 +127,12 @@ public:
 
 	UFUNCTION()
 	void Interact();
+
+	UFUNCTION()
+	void Floor3_ChargeValueBeforeRotate();
+
+	UFUNCTION()
+	void Floor3_CompleteChargeValue();
 
 	UFUNCTION()
 	void Click();
@@ -136,6 +153,11 @@ public:
 	void ToggleInventory();
 
 	void AddItemToInventory(const FItemData& itemData);
+
+	UFUNCTION()
+	void TakeDamage(float damageAmount);
+
+
 protected:
 
 	/** Called for movement input */
