@@ -282,7 +282,7 @@ void AKillerRestaurantCharacter::Floor3_ChargeValueBeforeRotate()
 {
 	if (bKeyF_Charging)
 	{
-		keyF_ChargingValue += 0.01;
+		keyF_ChargingValue += 0.02;
 
 		UE_LOG(LogTemp, Warning, TEXT("keyF_ChargingValue: %f"), keyF_ChargingValue);
 

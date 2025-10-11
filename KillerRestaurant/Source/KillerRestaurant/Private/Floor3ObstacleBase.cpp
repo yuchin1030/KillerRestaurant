@@ -16,6 +16,7 @@ void AFloor3ObstacleBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	player = Cast<AKillerRestaurantCharacter>((UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)));
 }
 
 void AFloor3ObstacleBase::Tick(float DeltaTime)
@@ -31,9 +32,9 @@ void AFloor3ObstacleBase::OnObstacleOverlapDamage(UPrimitiveComponent* Overlappe
 		// 데미지처리
 		UE_LOG(LogTemp, Warning, TEXT("Apply Damage"));
 
-		class AKillerRestaurantCharacter* player = Cast<AKillerRestaurantCharacter>(OtherActor);
+		if (player)
+			player->TakeDamage(ObstacleInfo.damage);
 
-		player->TakeDamage(ObstacleInfo.damage);
 	}
 	else
 	{
@@ -45,9 +46,8 @@ void AFloor3ObstacleBase::OnObstacleOverlapInteract(UPrimitiveComponent* Overlap
 {
 	if (OtherActor && OtherActor->ActorHasTag("Player"))
 	{
-		class AKillerRestaurantCharacter* player = Cast<AKillerRestaurantCharacter>(OtherActor);
-
-		player->currentOverlappedInteractItem = this;
+		if (player)
+			player->currentOverlappedInteractItem = this;
 
 		UE_LOG(LogTemp, Warning, TEXT("InteractItem: %s"), *player->currentOverlappedInteractItem->GetName());
 	}
@@ -55,5 +55,10 @@ void AFloor3ObstacleBase::OnObstacleOverlapInteract(UPrimitiveComponent* Overlap
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OtherActor is NULL or not have player tag"));
 	}
+}
+
+void AFloor3ObstacleBase::OnObstacleOverlapInteractEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	player->currentOverlappedInteractItem = nullptr;
 }
 
