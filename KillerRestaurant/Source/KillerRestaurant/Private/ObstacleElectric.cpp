@@ -29,6 +29,9 @@ AObstacleElectric::AObstacleElectric()
 	boxInteractColl->SetBoxExtent(FVector(70, 70, 100));
 	VFX_electric->SetRelativeLocation(FVector(-150, 0, 0));
 	smComp->SetRelativeScale3D(FVector(0.5, 0.5, 2));
+
+	boxDamageColl->SetCollisionProfileName(TEXT("Obstacle"));;
+	boxInteractColl->SetCollisionProfileName(TEXT("Obstacle"));
 }
 
 void AObstacleElectric::BeginPlay()
@@ -48,9 +51,6 @@ void AObstacleElectric::BeginPlay()
 	{
 		boxDamageColl->OnComponentBeginOverlap.AddDynamic(this, &AFloor3ObstacleBase::OnObstacleOverlapDamage);
 	}
-
-	boxDamageColl->SetCollisionProfileName(TEXT("Obstacle"));;
-	boxInteractColl->SetCollisionProfileName(TEXT("Obstacle"));
 }
 
 void AObstacleElectric::Tick(float DeltaTime)

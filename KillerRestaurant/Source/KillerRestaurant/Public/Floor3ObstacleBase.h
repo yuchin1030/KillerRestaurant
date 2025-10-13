@@ -54,4 +54,6 @@ public:
     // 오버랩 종료 후 상호작용 처리 함수
     UFUNCTION()
     void OnObstacleOverlapInteractEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
 };

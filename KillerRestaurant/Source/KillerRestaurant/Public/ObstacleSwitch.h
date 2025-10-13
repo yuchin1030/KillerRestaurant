@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class KILLERRESTAURANT_API AObstacleSwitch : public AFloor3ObstacleBase
 {
@@ -23,4 +24,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	class UBoxComponent* boxInteractColl;
+
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Switch")
+    //int32 SwitchGroupID = 0; // 소속 그룹 ID
+
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Switch")
+    //float ActiveTime = 5.f;
+
+    //UPROPERTY(BlueprintReadOnly)
+    //bool bIsActive = false;
+
 };

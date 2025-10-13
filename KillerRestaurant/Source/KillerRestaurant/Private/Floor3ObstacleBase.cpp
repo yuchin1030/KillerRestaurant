@@ -30,8 +30,7 @@ void AFloor3ObstacleBase::OnObstacleOverlapDamage(UPrimitiveComponent* Overlappe
 	if (OtherActor && OtherActor->ActorHasTag("Player"))
 	{
 		// 데미지처리
-		UE_LOG(LogTemp, Warning, TEXT("Apply Damage"));
-
+ 
 		if (player)
 			player->TakeDamage(ObstacleInfo.damage);
 
