@@ -75,7 +75,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category="MySettings")
-	TSubclassOf<ACustomer> customer_bp;
+	TSubclassOf<class ACustomer> customer_bp;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	FVector customerStartLoc = FVector(724, -1157, 94);
@@ -104,7 +104,7 @@ public:
 	class AKillerRestaurantCharacter* player;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
-	TArray<UCustomerDialougeDataAsset*> AllDialogueDatas;
+	TArray<class UCustomerDialougeDataAsset*> AllDialogueDatas;
 
 	UPROPERTY()
 	class UCustomerDialogueWidget* dialogueUI;

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Floor3ObstacleBase.h"
+#include "CanInteract.h"
 #include "ObstacleElectric.generated.h"
 
 /**

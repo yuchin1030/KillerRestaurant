@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "ItemBase.h"
 #include "KillerRestaurantCharacter.generated.h"
 
 class USpringArmComponent;
