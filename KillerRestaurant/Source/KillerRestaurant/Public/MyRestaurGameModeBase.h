@@ -29,10 +29,10 @@ public:
 	class ACustomerManager* cuM;
 
 	UPROPERTY()
-	int32 gameHour = 17;	// 12시 시작
+	int32 gameHour = 12;	// 12시 시작
 
 	UPROPERTY()
-	int32 gameMinute = 50;	// 00분 시작
+	int32 gameMinute = 00;	// 00분 시작
 
 	UPROPERTY()
 	float timeElapsed = 0;  // 실제 경과된 시간

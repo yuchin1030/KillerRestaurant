@@ -6,7 +6,7 @@
 #include "CustomerTargetPoint.h"
 #include <Kismet/GameplayStatics.h>
 #include "KillerRestaurantCharacter.h"
-#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "CustomerDialougeDataAsset.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/AssetManager.h"
@@ -73,16 +73,16 @@ void ACustomerManager::Tick(float DeltaTime)
 
 	if (bCameraTransitioning)
 	{
-		USpringArmComponent* boom = player->GetCameraBoom();
+		UCameraComponent* camera = player->GetFollowCamera();
 
 		// 위치 및 회전을 부드럽게 변화시키기 위한 보간 함수
 		// VInterpTo(현재위치, 목표위치, DeltaTime, 속도) - 현재위치에서 목표위치까지 부드럽게 이동
 		// RInterpTo(현재회전값, 목표회전값, DeltaTime, 속도) - 현재회전값에서 목표회전값까지 부드럽게 회전
-		FVector newLoc = FMath::VInterpTo(boom->GetRelativeLocation(), cameraTargetLoc, DeltaTime, cameraLerpSpeed);	
-		FRotator newRot = FMath::RInterpTo(boom->GetRelativeRotation(), cameraTargetRot, DeltaTime, cameraLerpSpeed);
+		FVector newLoc = FMath::VInterpTo(camera->GetRelativeLocation(), cameraTargetLoc, DeltaTime, cameraLerpSpeed);
+		FRotator newRot = FMath::RInterpTo(camera->GetRelativeRotation(), cameraTargetRot, DeltaTime, cameraLerpSpeed);
 
-		boom->SetRelativeLocation(newLoc);
-		boom->SetRelativeRotation(newRot);
+		camera->SetRelativeLocation(newLoc);
+		camera->SetRelativeRotation(newRot);
 
 		// 완료 체크 (목표위치와 목표 회전에 거의 도달했으면 멈춤)
 		if (FVector::Dist(newLoc, cameraTargetLoc) < 1.f && FMath::Abs((newRot - cameraTargetRot).Yaw) < 1.f)
@@ -149,16 +149,17 @@ void ACustomerManager::SetPlayerCameraView(bool bWaiting)
 {
 	bCameraTransitioning = true;
 
-	player->GetCameraBoom()->bUsePawnControlRotation = !bWaiting;
+	//player->GetCameraBoom()->bUsePawnControlRotation = !bWaiting;
 
 	if (bWaiting)
 	{
-		cameraTargetLoc = FVector(219, 0, 222);
-		cameraTargetRot = FRotator(-47, 0, 0);
+		//player->GetCameraBoom()->TargetArmLength = 400;
+		cameraTargetLoc = FVector(10, 0, 356);
+		cameraTargetRot = FRotator(-55, 0, 0);
 	}
 	else
 	{
-		cameraTargetLoc = FVector(570, 0, 0);
+		cameraTargetLoc = FVector(320, 0, 144);
 		cameraTargetRot = FRotator(0);
 	}
 	//// 주문 받았으면 요리 시점으로 변경 - Customer : Wait 상태
@@ -287,8 +288,10 @@ void ACustomerManager::CalculateReward(float totalSatisfaction)
 	}
 }
 
-FString ACustomerManager::GetCustomerDialogue(float satisfaction)
+FClueDialogueEntry ACustomerManager::GetCustomerDialogue(float satisfaction)
 {
+	FClueDialogueEntry Result;
+
 	// 만족도 등급 설정
 	ESatisfactionGrade grade;
 
@@ -318,6 +321,7 @@ FString ACustomerManager::GetCustomerDialogue(float satisfaction)
 		UE_LOG(LogTemp, Warning, TEXT("bGiveClue : %d"), bGiveClue);
 
 		TArray<FString> Candidates;
+		TArray<FText> Choices;
 
 		// 퀘스트 대사 주는 경우
 		if (bGiveClue)
@@ -329,6 +333,7 @@ FString ACustomerManager::GetCustomerDialogue(float satisfaction)
 				{
 					// 임의 배열에 Add
 					Candidates.Add(Entry.Dialogue);
+					Result.Choices = Entry.Choices;
 				}
 			}
 
@@ -336,7 +341,9 @@ FString ACustomerManager::GetCustomerDialogue(float satisfaction)
 			if (Candidates.Num() > 0)
 			{
 				int32 RandIdx = FMath::RandRange(0, Candidates.Num() - 1);
-				return Candidates[RandIdx];
+				Result.Dialogue = Candidates[RandIdx];
+
+				return Result;
 			}
 			else
 			{
@@ -344,7 +351,7 @@ FString ACustomerManager::GetCustomerDialogue(float satisfaction)
 			}
 
 
-			return TEXT("...");
+			return Result;
 		}
 		// 일상 대사 주는 경우
 		else
@@ -369,14 +376,15 @@ FString ACustomerManager::GetCustomerDialogue(float satisfaction)
 			if (targetArray && targetArray->Num() > 0)
 			{
 				int32 randIdx = FMath::RandRange(0, targetArray->Num() - 1);
-				return (*targetArray)[randIdx];
+				Result.Dialogue = (*targetArray)[randIdx];
+				return Result;
 			}
 
-			return TEXT("...");
+			return Result;
 		}
 
 	}
-	return TEXT("...");
+	return Result;
 }
 
 

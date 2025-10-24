@@ -29,8 +29,9 @@ void AMyRestaurGameModeBase::BeginPlay()
 
 	if (player)
 	{
-        //player->GetCameraBoom()->SetRelativeLocation(FVector(570, 0, 0));
-		//player->GetFollowCamera()->SetRelativeLocation(FVector(410, 0, 80));
+        // 초기 카메라 세팅
+        player->GetCameraBoom()->TargetArmLength = 0;
+		player->GetFollowCamera()->SetRelativeLocation(FVector(320, 0, 144));
 	}
 	else
 	{

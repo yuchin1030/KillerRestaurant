@@ -125,7 +125,7 @@ public:
 	void CalculateReward(float totalSatisfaction);
 
 	UFUNCTION()
-	FString GetCustomerDialogue(float satisfaction);
+	FClueDialogueEntry GetCustomerDialogue(float satisfaction);
 
 	UFUNCTION()
 	void SetPlayerCameraView(bool bWaiting);

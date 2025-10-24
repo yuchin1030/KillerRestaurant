@@ -31,6 +31,9 @@ struct FClueDialogueEntry
     // 실제 대사 내용
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FString Dialogue;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FText> Choices;
 };
 
 UCLASS()

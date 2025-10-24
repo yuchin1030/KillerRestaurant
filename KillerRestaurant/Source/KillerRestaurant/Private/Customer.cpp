@@ -12,6 +12,7 @@
 #include "Components/WidgetComponent.h"
 #include "MyRestaurGameModeBase.h"
 #include "CustomerDialogueWidget.h"
+#include <CustomerDialougeDataAsset.h>
 
 ACustomer::ACustomer()
 {
@@ -174,13 +175,11 @@ void ACustomer::Check(float _DeltaTime)
 		cuM->CalculateReward(totalSatisfaction);
 
 		// 대화 UI 및 
-		FString selectedDialogue = cuM->GetCustomerDialogue(totalSatisfaction);
-		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *selectedDialogue);
+		FClueDialogueEntry dialogueResult = cuM->GetCustomerDialogue(totalSatisfaction);
+		UE_LOG(LogTemp, Warning, TEXT("dialogue : %s"), *dialogueResult.Dialogue);
 
-		cuM->dialogueUI->SetDialogueUI(FText::GetEmpty(), selectedDialogue, TArray<FText>(), TArray<float>());
+		cuM->dialogueUI->SetDialogueUI(FText::GetEmpty(), dialogueResult.Dialogue, dialogueResult.Choices, TArray<float>());
 		cuM->dialogueUI->SetVisibility(ESlateVisibility::Visible);
-
-		
 
 		// 영업시간 종료가 아닐 경우에만
 		if (!gm->bClosingTime)
