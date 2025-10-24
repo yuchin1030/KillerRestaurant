@@ -32,7 +32,9 @@ void AGrilledSausage::Grill()
 
 		isGrilled = true;
 		UE_LOG(LogTemp, Warning, TEXT("sausage grilled!"));
-		SetActorRotation(FRotator(0,90,0));
+		
+		if (M_Grilled)
+			smComp->SetOverlayMaterial(M_Grilled);
 
 		//FTimerHandle burnTimerHdl;
 		//GetWorld()->GetTimerManager().SetTimer(burnTimerHdl, [&]() {

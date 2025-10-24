@@ -26,6 +26,9 @@ public:
 	UPROPERTY()
 	int32 curSausageLocIndex;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UMaterialInterface* M_Grilled;
+
 	//UPROPERTY()
 	bool isGrilled;
 	bool isBurned;

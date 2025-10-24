@@ -16,7 +16,7 @@ ADough::ADough()
 void ADough::BeginPlay()
 {
 	Super::BeginPlay();
-    SetActorLocation(FVector(459, -464, 94));
+    SetActorLocation(FVector(-18, -366, 97));
 }
 
 void ADough::Tick(float DeltaTime)

@@ -20,13 +20,13 @@ AServingBell::AServingBell()
 	sm_ThirdBell->SetupAttachment(sceneComp);
 
 	sm_FirstBell->SetRelativeLocation(FVector(0, -200, 0));
-	sm_FirstBell->SetRelativeScale3D(FVector(0.4));
+	sm_FirstBell->SetRelativeScale3D(FVector(2));
 
 	sm_SecondBell->SetRelativeLocation(FVector(0, 0, 0));
-	sm_SecondBell->SetRelativeScale3D(FVector(0.4));
+	sm_SecondBell->SetRelativeScale3D(FVector(2));
 
 	sm_ThirdBell->SetRelativeLocation(FVector(0, 200, 0));
-	sm_ThirdBell->SetRelativeScale3D(FVector(0.4));
+	sm_ThirdBell->SetRelativeScale3D(FVector(2));
 }
 
 void AServingBell::BeginPlay()

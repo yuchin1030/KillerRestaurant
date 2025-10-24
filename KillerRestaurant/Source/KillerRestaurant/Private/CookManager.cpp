@@ -95,6 +95,8 @@ void ACookManager::PlaceBread(FVector b_targetLoc, int32 index)
 
     if (bread)
     {
+        bread->SetActorScale3D(FVector(0.8f));
+
         // 스폰됐을때 자신(빵)이 화구 어느 인덱스 위치에 스폰되어있는지 저장해둠
         bread->SetCurBreadLocIndex(index);
 

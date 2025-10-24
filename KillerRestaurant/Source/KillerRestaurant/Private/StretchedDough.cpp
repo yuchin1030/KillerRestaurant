@@ -28,6 +28,13 @@ AStretchedDough::AStretchedDough()
 	sm_onions->SetVisibility(false);
 	sm_ketchup->SetVisibility(false);
 	sm_mustard->SetVisibility(false);
+
+	sm_sausage->SetRelativeLocation(FVector(-8, -18, -11));
+	sm_sausage->SetRelativeScale3D(FVector(-1, 0, 2));
+
+	sm_onions->SetRelativeLocation(FVector(-8, -18, -11));
+	sm_onions->SetRelativeScale3D(FVector(1.25f));
+
 }
 
 void AStretchedDough::BeginPlay()

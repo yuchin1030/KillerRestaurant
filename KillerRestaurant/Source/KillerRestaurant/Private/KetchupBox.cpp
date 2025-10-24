@@ -10,6 +10,8 @@ AKetchupBox::AKetchupBox()
 
 	smComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("smComp"));
 	SetRootComponent(smComp);
+
+	smComp->SetRelativeScale3D(FVector(2.5));
 }
 
 void AKetchupBox::BeginPlay()

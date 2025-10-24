@@ -32,7 +32,7 @@ void UCustomerDialogueWidget::NativeConstruct()
 void UCustomerDialogueWidget::SetDialogueUI(FText SpeakerName, FString DialougeText, TArray<FText> Choices, TArray<float> NextIndexes)
 {
 	// АЊ РќДо
-	NextIndexValues = NextIndexes;
+	//NextIndexValues = NextIndexes;
 
 	Text_SpeakerName->SetText(SpeakerName);
 	Text_Dialogue->SetText(FText::FromString(DialougeText));

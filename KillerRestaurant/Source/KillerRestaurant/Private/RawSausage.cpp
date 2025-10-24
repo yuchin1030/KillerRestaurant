@@ -11,13 +11,16 @@ ARawSausage::ARawSausage()
 	smComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("smComp"));
 	SetRootComponent(smComp);
 
+	smComp->SetRelativeScale3D(FVector(1.25));
+
+
 }
 
 void ARawSausage::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	SetActorLocation(FVector(165, 250, 98));
+	SetActorLocation(FVector(-10, 67, 94));
 }
 
 void ARawSausage::Tick(float DeltaTime)
