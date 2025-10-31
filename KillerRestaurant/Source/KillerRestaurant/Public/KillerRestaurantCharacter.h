@@ -116,6 +116,9 @@ public:
 
 	float keyF_ChargingValue = 0;
 
+	// 3층 퀘스트 막힌 길에서 특정 아이템이 인벤토리에 존재하는지 여부
+	UFUNCTION()
+	bool HasItem(FName requiredItemName);
 
 	UFUNCTION()
 	void SetNPCDialogueEntry(float DialogueIndex);

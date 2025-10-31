@@ -18,15 +18,15 @@ void AMyGameModeBase::BeginPlay()
 
 	if (player)
 	{
-		player->GetCameraBoom()->SocketOffset = FVector(0.f, 125.f, 100.f); // Y축 오른쪽으로 125만큼, Z축 위로 100만큼 오프셋
-		player->GetCameraBoom()->TargetArmLength = 300.f;
-		player->GetCameraBoom()->bUsePawnControlRotation = true;
-		player->GetCameraBoom()->bInheritPitch = true;
-		player->GetCameraBoom()->bInheritYaw = true;
-		player->GetCameraBoom()->bInheritRoll = true;
+		//player->GetCameraBoom()->SocketOffset = FVector(0.f, 125.f, 100.f); // Y축 오른쪽으로 125만큼, Z축 위로 100만큼 오프셋
+		//player->GetCameraBoom()->TargetArmLength = 300.f;
+		//player->GetCameraBoom()->bUsePawnControlRotation = true;
+		//player->GetCameraBoom()->bInheritPitch = true;
+		//player->GetCameraBoom()->bInheritYaw = true;
+		//player->GetCameraBoom()->bInheritRoll = true;
 
-		// FollowCamera 설정
-		player->GetFollowCamera()->bUsePawnControlRotation = false;
+		//// FollowCamera 설정
+		//player->GetFollowCamera()->bUsePawnControlRotation = false;
 
 		// 캐릭터 회전 설정
 		/*player->bUseControllerRotationYaw = true;

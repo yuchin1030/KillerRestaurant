@@ -32,8 +32,17 @@ AStretchedDough::AStretchedDough()
 	sm_sausage->SetRelativeLocation(FVector(-8, -18, -11));
 	sm_sausage->SetRelativeScale3D(FVector(-1, 0, 2));
 
+	sm_pickles->SetRelativeLocation(FVector(2, -3, 30));
+
 	sm_onions->SetRelativeLocation(FVector(-8, -18, -11));
 	sm_onions->SetRelativeScale3D(FVector(1.25f));
+
+	sm_ketchup->SetRelativeLocation(FVector(2, 0, 5));
+	sm_ketchup->SetRelativeScale3D(FVector(1.5, 1.4, 1));
+
+	sm_mustard->SetRelativeLocation(FVector(-2, 0, 4));
+	sm_mustard->SetRelativeScale3D(FVector(1.5, 1.4, 1));
+
 
 }
 

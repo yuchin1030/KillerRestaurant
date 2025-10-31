@@ -166,7 +166,7 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Floor2_Click);
 		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
 
-		EnhancedInputComponent->BindAction(ia_RightClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::PickUpItem);
+		//EnhancedInputComponent->BindAction(ia_RightClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::PickUpItem);
 
 		EnhancedInputComponent->BindAction(ia_Inventory, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::ToggleInventory);
 
@@ -271,6 +271,28 @@ void AKillerRestaurantCharacter::Interact()
 		{
 			bKeyF_Charging = true;
 		}
+		else if (currentOverlappedInteractItem->ActorHasTag("Interact/PickUpItem"))
+		{
+			AItemBase* item = Cast<AItemBase>(currentOverlappedInteractItem);
+				
+			if (item)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Get Item! : %s"), *item->GetName());
+
+				AddItemToInventory(item->itemData); // 인벤토리에 추가
+				item->Destroy(); // 월드에서 제거
+			}
+		}
+		else if (currentOverlappedInteractItem->ActorHasTag("Interact/BlockWall"))
+		{
+			// 인터페이스 함수 호출 방법
+			// 클래스를 찾아와서 변환에 성공하면 해당 클래스는 ICanInteract를 상속 받은 클래스
+			ICanInteract* CanInteractInterface = Cast<ICanInteract>(currentOverlappedInteractItem);
+
+			if (CanInteractInterface)
+				CanInteractInterface->OpenWall(this);
+
+		}
 	}
 	else
 	{
@@ -312,6 +334,21 @@ void AKillerRestaurantCharacter::Floor3_CompleteChargeValue()
 {
 	// 상호작용 및 회전 가능한 오브젝트 대상; 중간에 F키 떼도 차징 값 0으로 복귀
 	keyF_ChargingValue = 0;
+}
+
+bool AKillerRestaurantCharacter::HasItem(FName requiredItemName)
+{
+	if (inventory.FindByPredicate([&](const FItemData& item)
+		{
+			return item.ItemName == requiredItemName;
+		}))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Player has required item: %s"), *requiredItemName.ToString());
+		return true;
+
+	}
+
+	return false;
 }
 
 void AKillerRestaurantCharacter::SetNPCDialogueEntry(float DialogueIndex)
@@ -475,7 +512,15 @@ void AKillerRestaurantCharacter::Shoot()
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this); // 자기 자신 무시
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end,ECC_Visibility, params);
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility, params);
+
+	if (bHit)
+	{
+		DrawDebugLine(GetWorld(), start, HitResult.ImpactPoint, FColor::Red, false, 1.f, 0, 1.f);
+		UE_LOG(LogTemp, Warning, TEXT("Shoot"));
+	}
+	
+
 }
 
 void AKillerRestaurantCharacter::Back()
@@ -487,29 +532,28 @@ void AKillerRestaurantCharacter::Back()
 
 void AKillerRestaurantCharacter::PickUpItem()
 {
-	UE_LOG(LogTemp, Warning, TEXT("RightClcik"));
 
-	FVector Start = FollowCamera->GetComponentLocation(); // 카메라 위치
-	FVector End = Start + (FollowCamera->GetForwardVector() * 1000.0f); // 500 유닛 전방
+	//FVector Start = FollowCamera->GetComponentLocation(); // 카메라 위치
+	//FVector End = Start + (FollowCamera->GetForwardVector() * 1000.0f); // 500 유닛 전방
 
-	FHitResult hitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // 자기 자신은 무시
+	//FHitResult hitResult;
+	//FCollisionQueryParams Params;
+	//Params.AddIgnoredActor(this); // 자기 자신은 무시
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECC_Visibility, Params);
-	
-	if (bHit)
-	{
-		AItemBase* hitItem = Cast<AItemBase>(hitResult.GetActor());
-		if (hitItem)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Get Item! : %s"), *hitItem->GetName());
+	//bool bHit = GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECC_Visibility, Params);
+	//
+	//if (bHit)
+	//{
+	//	AItemBase* hitItem = Cast<AItemBase>(hitResult.GetActor());
+	//	if (hitItem)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("Get Item! : %s"), *hitItem->GetName());
 
-			AddItemToInventory(hitItem->itemData); // 인벤토리에 추가
-			hitItem->Destroy(); // 월드에서 제거
-		}
-		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 2.0f);
-	}
+	//		AddItemToInventory(hitItem->itemData); // 인벤토리에 추가
+	//		hitItem->Destroy(); // 월드에서 제거
+	//	}
+	//	DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 2.0f);
+	//}
 }
 
 void AKillerRestaurantCharacter::ToggleInventory()

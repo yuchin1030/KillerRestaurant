@@ -26,4 +26,6 @@ public:
 	UFUNCTION()
 	virtual void RotateTarget();
 
+	UFUNCTION()
+	virtual void OpenWall(AKillerRestaurantCharacter* player);
 };
