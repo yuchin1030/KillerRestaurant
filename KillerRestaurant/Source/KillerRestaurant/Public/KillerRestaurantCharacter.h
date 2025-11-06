@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "ItemBase.h"
+#include "AnimationState.h"
 #include "KillerRestaurantCharacter.generated.h"
 
 class USpringArmComponent;
@@ -129,6 +130,9 @@ public:
 	bool bIsPrimaryEquip;
 
 	bool CanFire();
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	EAnimationState AnimationState;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class USceneComponent* sceneCompPrimary;
