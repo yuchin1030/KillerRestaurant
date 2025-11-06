@@ -35,6 +35,10 @@
 #include "Floor2_RotateItemBase.h"
 #include "Floor2_ColorItemBase.h"
 #include "CanInteract.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/SceneComponent.h"
+#include "Components/ChildActorComponent.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -74,6 +78,21 @@ AKillerRestaurantCharacter::AKillerRestaurantCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), "RH_Rifle");
+
+	sceneCompPrimary = CreateDefaultSubobject<USceneComponent>(TEXT("Primary"));
+	sceneCompPrimary->SetupAttachment(GetMesh(), "RifleHost_Socket");
+
+	PrimaryChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("PrimaryChild"));
+	PrimaryChild->SetupAttachment(sceneCompPrimary);
+
+	sceneCompHandgun = CreateDefaultSubobject<USceneComponent>(TEXT("Handgun"));
+	sceneCompHandgun->SetupAttachment(GetMesh(), "PistolHost_Socket");
+
+	HandgunChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("HandgunChild"));
+	HandgunChild->SetupAttachment(sceneCompHandgun);
 }
 
 void AKillerRestaurantCharacter::BeginPlay()
@@ -123,7 +142,6 @@ void AKillerRestaurantCharacter::BeginPlay()
 	{
 		npcM = *It;
 	}
-
 }
 
 void AKillerRestaurantCharacter::Tick(float DeltaTime)
@@ -164,9 +182,13 @@ void AKillerRestaurantCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Click);
 		EnhancedInputComponent->BindAction(ia_LeftClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Floor2_Click);
-		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
 
-		//EnhancedInputComponent->BindAction(ia_RightClick, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::PickUpItem);
+		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Triggered, this, &AKillerRestaurantCharacter::ShootTriggered);
+		EnhancedInputComponent->BindAction(ia_Shoot, ETriggerEvent::Completed, this, &AKillerRestaurantCharacter::ShootCompleted);
+
+		EnhancedInputComponent->BindAction(ia_Aim, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::Aim);
+		EnhancedInputComponent->BindAction(ia_Aim, ETriggerEvent::Completed, this, &AKillerRestaurantCharacter::Aim);
 
 		EnhancedInputComponent->BindAction(ia_Inventory, ETriggerEvent::Started, this, &AKillerRestaurantCharacter::ToggleInventory);
 
@@ -336,6 +358,14 @@ void AKillerRestaurantCharacter::Floor3_CompleteChargeValue()
 	keyF_ChargingValue = 0;
 }
 
+bool AKillerRestaurantCharacter::CanFire()
+{
+	if ((!bIsSprint && !bIsDodging && CanJump()) || bIsCrouch)
+		return true;
+	
+	return false;
+}
+
 bool AKillerRestaurantCharacter::HasItem(FName requiredItemName)
 {
 	if (inventory.FindByPredicate([&](const FItemData& item)
@@ -503,10 +533,34 @@ void AKillerRestaurantCharacter::Floor2_Click()
 	}
 }
 
-void AKillerRestaurantCharacter::Shoot()
+void AKillerRestaurantCharacter::Shoot(const FInputActionValue& Value)
 {
-	FVector start = FollowCamera->GetComponentLocation(); // 총구 위치
-	FVector end = start + GetActorForwardVector() * 1000.f; // 사거리
+	bShooting = Value.Get<bool>();
+
+	if (bShooting)
+	{
+		if (bCanShoot)
+		{
+			if (CanFire())
+			{
+				if (bIsPrimaryEquip)
+				{
+					bCanShoot = false;
+
+					//PrimaryChild->GetChildActor()
+				}
+			}
+		}
+	}
+	if (ShootMontage && !GetMesh()->GetAnimInstance()->Montage_IsPlaying(ShootMontage))
+	{
+		PlayAnimMontage(ShootMontage);
+	}
+	//FVector start = FollowCamera->GetComponentRotation().Vector(); 
+	//FVector end = start + GetActorForwardVector() * 1000.f; 
+
+	FVector start = FollowCamera->GetComponentLocation();	// 총구 위치
+	FVector end = start + FollowCamera->GetComponentRotation().Vector() * 1000.0f;	// 사거리
 
 	FHitResult HitResult;
 	FCollisionQueryParams params;
@@ -519,8 +573,21 @@ void AKillerRestaurantCharacter::Shoot()
 		DrawDebugLine(GetWorld(), start, HitResult.ImpactPoint, FColor::Red, false, 1.f, 0, 1.f);
 		UE_LOG(LogTemp, Warning, TEXT("Shoot"));
 	}
-	
 
+}
+
+void AKillerRestaurantCharacter::ShootTriggered()
+{
+	bShooting = true;
+	/*if (ShootMontage && !GetMesh()->GetAnimInstance()->Montage_IsPlaying(ShootMontage))
+	{
+		PlayAnimMontage(ShootMontage);
+	}*/
+}
+
+void AKillerRestaurantCharacter::ShootCompleted()
+{
+	//bShooting = false;
 }
 
 void AKillerRestaurantCharacter::Back()
@@ -554,6 +621,17 @@ void AKillerRestaurantCharacter::PickUpItem()
 	//	}
 	//	DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 2.0f);
 	//}
+}
+
+void AKillerRestaurantCharacter::Aim()
+{
+	bAiming = !bAiming;
+
+	UE_LOG(LogTemp, Warning, TEXT("ddddddd"));
+	if (bAiming)
+	{
+
+	}
 }
 
 void AKillerRestaurantCharacter::ToggleInventory()

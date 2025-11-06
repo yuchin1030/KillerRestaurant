@@ -22,7 +22,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
-	TArray<UNPCDialogueAsset*> AllDialogueDatas;
+	TArray<class UNPCDialogueAsset*> AllDialogueDatas;
 
 	UPROPERTY()
 	class UCustomerDialogueWidget* dialogueUI;

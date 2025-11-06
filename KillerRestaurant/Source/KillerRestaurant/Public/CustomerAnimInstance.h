@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Customer.h"
 #include "CustomerAnimInstance.generated.h"
 
 /**

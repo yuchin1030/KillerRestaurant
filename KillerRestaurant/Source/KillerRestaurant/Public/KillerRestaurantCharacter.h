@@ -28,7 +28,7 @@ class AKillerRestaurantCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
@@ -55,7 +55,7 @@ class AKillerRestaurantCharacter : public ACharacter
 	UInputAction* ia_Shoot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ia_RightClick;
+	UInputAction* ia_Aim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ia_Inventory;
@@ -113,8 +113,42 @@ public:
 	TArray<FItemData> inventory;
 
 	bool bKeyF_Charging;
-
 	float keyF_ChargingValue = 0;
+
+	/* --------------------- Weapon ------------------------*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MySettings")
+	bool bAiming;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MySettings")
+	bool bShooting;
+
+	bool bCanShoot = true;
+	bool bIsSprint;
+	bool bIsDodging;
+	bool bIsCrouch;
+	bool bIsPrimaryEquip;
+
+	bool CanFire();
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USceneComponent* sceneCompPrimary;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UChildActorComponent* PrimaryChild;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USceneComponent* sceneCompHandgun;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UChildActorComponent* HandgunChild;
+
+	UPROPERTY(VisibleAnywhere)
+	class USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UAnimMontage* ShootMontage;
+
+	/* ------------------------------------------------*/
 
 	// 3층 퀘스트 막힌 길에서 특정 아이템이 인벤토리에 존재하는지 여부
 	UFUNCTION()
@@ -145,13 +179,22 @@ public:
 	void Floor2_Click();
 
 	UFUNCTION()
-	void Shoot();
+	void Shoot(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void ShootTriggered();
+
+	UFUNCTION()
+	void ShootCompleted();
 
 	UFUNCTION()
 	void Back();
 
 	UFUNCTION()
 	void PickUpItem();
+
+	UFUNCTION()
+	void Aim();
 
 	UFUNCTION()
 	void ToggleInventory();
